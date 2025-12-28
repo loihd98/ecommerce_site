@@ -1,0 +1,313 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String?
+  name         String
+  avatar       String?
+  phone        String?
+  role         Role     @default(USER)
+  
+  // OAuth
+  googleId     String?  @unique
+  facebookId   String?  @unique
+  
+  isEmailVerified Boolean @default(false)
+  resetToken      String?
+  resetTokenExpiry DateTime?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  addresses    Address[]
+  orders       Order[]
+  reviews      Review[]
+  wishlist     Wishlist[]
+  cart         CartItem[]
+  
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  description String?
+  image     String?
+  parentId  String?
+  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryToCategory")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  products  Product[]
+  
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  shortDesc   String?
+  
+  price       Float
+  comparePrice Float?   // Original price for discount display
+  cost        Float?    // Cost price for profit calculation
+  
+  sku         String?  @unique
+  barcode     String?
+  
+  images      String[] // Array of image URLs
+  
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  
+  // Stock management
+  stock       Int      @default(0)
+  lowStockThreshold Int @default(5)
+  
+  // Status
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  
+  // Stats
+  viewCount   Int      @default(0)
+  soldCount   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  variants    ProductVariant[]
+  reviews     Review[]
+  orderItems  OrderItem[]
+  wishlist    Wishlist[]
+  cart        CartItem[]
+  
+  @@map("products")
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  name      String   // "Red - Large"
+  sku       String?  @unique
+  price     Float?   // Override product price
+  stock     Int      @default(0)
+  
+  // Attributes
+  attributes Json    // {"color": "Red", "size": "Large"}
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("product_variants")
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fullName  String
+  phone     String
+  address   String
+  city      String
+  state     String?
+  zipCode   String?
+  country   String   @default("Vietnam")
+  
+  isDefault Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  orders    Order[]
+  
+  @@map("addresses")
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  addressId   String
+  address     Address  @relation(fields: [addressId], references: [id])
+  
+  // Pricing
+  subtotal    Float
+  tax         Float    @default(0)
+  shipping    Float    @default(0)
+  discount    Float    @default(0)
+  total       Float
+  
+  // Status
+  status      OrderStatus    @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod String?
+  
+  // Tracking
+  trackingNumber String?
+  notes       String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  items       OrderItem[]
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  quantity  Int
+  price     Float
+  total     Float
+  
+  // Snapshot data
+  productName String
+  productImage String?
+  
+  createdAt DateTime @default(now())
+  
+  @@map("order_items")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  rating    Int      // 1-5
+  title     String?
+  comment   String?
+  images    String[] // Review images
+  
+  isVerifiedPurchase Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([productId, userId])
+  @@map("reviews")
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, productId])
+  @@map("wishlists")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  quantity  Int      @default(1)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model Media {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  url         String
+  type        String   // "image" or "video"
+  
+  // Image metadata
+  width       Int?
+  height      Int?
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("media")
+}
+
+model Settings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("settings")
+}

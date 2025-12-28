@@ -1,0 +1,325 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import api from '@/lib/api';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { logout } from '@/store/slices/authSlice';
+import { UserIcon, MapPinIcon, HeartIcon, ShoppingBagIcon, KeyIcon } from '@heroicons/react/24/outline';
+
+export default function AccountPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+
+  const [activeTab, setActiveTab] = useState('profile');
+  const [profile, setProfile] = useState({ name: '', email: '' });
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    if (user) {
+      setProfile({ name: user.name, email: user.email });
+    }
+    if (activeTab === 'addresses') {
+      fetchAddresses();
+    }
+  }, [isAuthenticated, router, user, activeTab]);
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await api.get('/users/addresses');
+      setAddresses(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch addresses:', error);
+    }
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      await api.put('/users/profile', profile);
+      setMessage('Profile updated successfully!');
+    } catch (error: any) {
+      setMessage(error.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setMessage('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      await api.put('/users/password', {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      setMessage('Password changed successfully!');
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error: any) {
+      setMessage(error.response?.data?.message || 'Failed to change password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push('/');
+  };
+
+  const tabs = [
+    { id: 'profile', name: 'Profile', icon: UserIcon },
+    { id: 'addresses', name: 'Addresses', icon: MapPinIcon },
+    { id: 'orders', name: 'Orders', icon: ShoppingBagIcon },
+    { id: 'wishlist', name: 'Wishlist', icon: HeartIcon },
+    { id: 'security', name: 'Security', icon: KeyIcon },
+  ];
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h1 className="text-3xl font-bold mb-8">My Account</h1>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <div className="mb-6 text-center">
+              <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-3 flex items-center justify-center">
+                <UserIcon className="h-10 w-10 text-gray-400" />
+              </div>
+              <p className="font-semibold">{user?.name}</p>
+              <p className="text-sm text-gray-600">{user?.email}</p>
+            </div>
+
+            <nav className="space-y-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg ${
+                    activeTab === tab.id
+                      ? 'bg-black text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <tab.icon className="h-5 w-5" />
+                  {tab.name}
+                </button>
+              ))}
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+              >
+                Logout
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="lg:col-span-3">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            {message && (
+              <div
+                className={`mb-4 p-4 rounded-lg ${
+                  message.includes('success')
+                    ? 'bg-green-50 text-green-800'
+                    : 'bg-red-50 text-red-800'
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
+            {/* Profile Tab */}
+            {activeTab === 'profile' && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">Profile Information</h2>
+                <form onSubmit={handleUpdateProfile} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={profile.name}
+                      onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={profile.email}
+                      onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Addresses Tab */}
+            {activeTab === 'addresses' && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold">Saved Addresses</h2>
+                  <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">
+                    Add New Address
+                  </button>
+                </div>
+                {addresses.length === 0 ? (
+                  <p className="text-gray-600">No addresses saved yet.</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {addresses.map((address) => (
+                      <div key={address.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <p className="font-semibold">{address.fullName}</p>
+                          {address.isDefault && (
+                            <span className="text-xs bg-black text-white px-2 py-1 rounded">
+                              Default
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600">{address.addressLine1}</p>
+                        {address.addressLine2 && (
+                          <p className="text-sm text-gray-600">{address.addressLine2}</p>
+                        )}
+                        <p className="text-sm text-gray-600">
+                          {address.city}, {address.state} {address.postalCode}
+                        </p>
+                        <p className="text-sm text-gray-600 mt-2">{address.phone}</p>
+                        <div className="mt-4 flex gap-2">
+                          <button className="text-sm text-black hover:underline">Edit</button>
+                          <button className="text-sm text-red-600 hover:underline">Delete</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Orders Tab */}
+            {activeTab === 'orders' && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">Recent Orders</h2>
+                <p className="text-gray-600 mb-4">
+                  View your order history and track deliveries
+                </p>
+                <button
+                  onClick={() => router.push('/orders')}
+                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800"
+                >
+                  View All Orders
+                </button>
+              </div>
+            )}
+
+            {/* Wishlist Tab */}
+            {activeTab === 'wishlist' && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">My Wishlist</h2>
+                <p className="text-gray-600">Your saved items will appear here.</p>
+              </div>
+            )}
+
+            {/* Security Tab */}
+            {activeTab === 'security' && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">Change Password</h2>
+                <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={(e) =>
+                        setPasswordData({ ...passwordData, currentPassword: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={(e) =>
+                        setPasswordData({ ...passwordData, newPassword: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                      required
+                      minLength={8}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) =>
+                        setPasswordData({ ...passwordData, confirmPassword: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-black focus:border-black"
+                      required
+                      minLength={8}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    {loading ? 'Changing...' : 'Change Password'}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
