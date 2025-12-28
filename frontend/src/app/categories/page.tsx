@@ -5,40 +5,48 @@ import Link from 'next/link';
 import Image from 'next/image';
 import api from '@/lib/api';
 import { Category } from '@/types';
+import { useI18n } from '@/contexts/I18nContext';
 import { TagIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 export default function CategoriesPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
+    const { t } = useI18n();
 
     useEffect(() => {
+        setMounted(true);
         fetchCategories();
     }, []);
 
     const fetchCategories = async () => {
         try {
             const response = await api.get('/categories');
-            setCategories(response.data);
+            // Handle wrapped response from backend
+            const data = response.data.data || response.data;
+            setCategories(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching categories:', error);
+            setCategories([]);
         } finally {
             setLoading(false);
         }
     };
 
-    if (loading) {
+    // Show loading during SSR
+    if (!mounted || loading) {
         return (
-            <div className="min-h-screen bg-gray-50 py-12">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="animate-pulse">
-                        <div className="h-12 bg-gray-200 rounded w-1/3 mb-4"></div>
-                        <div className="h-6 bg-gray-200 rounded w-2/3 mb-12"></div>
+                        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+                        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-12"></div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {[...Array(8)].map((_, i) => (
-                                <div key={i} className="bg-white rounded-lg shadow-md p-6">
-                                    <div className="h-40 bg-gray-200 rounded mb-4"></div>
-                                    <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                                <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                                    <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
                                 </div>
                             ))}
                         </div>
@@ -49,22 +57,22 @@ export default function CategoriesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Browse Categories</h1>
-                    <p className="text-lg text-gray-600">
-                        Explore our wide range of product categories and find exactly what you're looking for.
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">{t('categories.title')}</h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-400">
+                        {t('categories.subtitle')}
                     </p>
                 </div>
 
                 {/* Categories Grid */}
                 {categories.length === 0 ? (
                     <div className="text-center py-12">
-                        <TagIcon className="mx-auto h-12 w-12 text-gray-400" />
-                        <h3 className="mt-2 text-sm font-medium text-gray-900">No categories found</h3>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <TagIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" />
+                        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">{t('categories.noCategories')}</h3>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             Categories will appear here once they are added.
                         </p>
                     </div>
@@ -74,7 +82,7 @@ export default function CategoriesPage() {
                             <Link
                                 key={category.id}
                                 href={`/products?categoryId=${category.id}`}
-                                className="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                                className="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                             >
                                 {/* Category Image */}
                                 <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
@@ -97,25 +105,25 @@ export default function CategoriesPage() {
                                 {/* Category Info */}
                                 <div className="p-6">
                                     <div className="flex items-start justify-between mb-2">
-                                        <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {category.name}
                                         </h3>
-                                        <ArrowRightIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                        <ArrowRightIcon className="h-5 w-5 text-gray-400 dark:text-gray-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
                                     </div>
 
                                     {category.description && (
-                                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                                             {category.description}
                                         </p>
                                     )}
 
                                     {/* Product Count */}
-                                    <div className="flex items-center text-sm text-gray-500">
-                                        <span className="font-medium text-blue-600">
+                                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                        <span className="font-medium text-blue-600 dark:text-blue-400">
                                             {category._count?.products || 0}
                                         </span>
                                         <span className="ml-1">
-                                            {category._count?.products === 1 ? 'product' : 'products'}
+                                            {category._count?.products === 1 ? t('categories.product') : t('categories.products')}
                                         </span>
                                     </div>
                                 </div>

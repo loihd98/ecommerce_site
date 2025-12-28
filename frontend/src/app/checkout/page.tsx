@@ -52,14 +52,16 @@ export default function CheckoutPage() {
   const fetchAddresses = async () => {
     try {
       const response = await api.get('/users/addresses');
-      const addressList = response.data.data || [];
-      setAddresses(addressList);
-      const defaultAddress = addressList.find((addr: Address) => addr.isDefault);
+      const addressList = response.data.data || response.data || [];
+      const validAddresses = Array.isArray(addressList) ? addressList : [];
+      setAddresses(validAddresses);
+      const defaultAddress = validAddresses.find((addr: Address) => addr.isDefault);
       if (defaultAddress) {
         setSelectedAddressId(defaultAddress.id);
       }
     } catch (error) {
       console.error('Failed to fetch addresses:', error);
+      setAddresses([]);
     }
   };
 
@@ -103,13 +105,12 @@ export default function CheckoutPage() {
           {['Shipping', 'Payment', 'Review'].map((label, index) => (
             <div key={label} className="flex items-center flex-1">
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                  step > index + 1
+                className={`flex items-center justify-center w-10 h-10 rounded-full ${step > index + 1
                     ? 'bg-green-500 text-white'
                     : step === index + 1
-                    ? 'bg-black text-white'
-                    : 'bg-gray-200 text-gray-500'
-                }`}
+                      ? 'bg-black text-white'
+                      : 'bg-gray-200 text-gray-500'
+                  }`}
               >
                 {step > index + 1 ? <CheckIcon className="h-6 w-6" /> : index + 1}
               </div>
@@ -120,9 +121,8 @@ export default function CheckoutPage() {
               </div>
               {index < 2 && (
                 <div
-                  className={`flex-1 h-1 ${
-                    step > index + 1 ? 'bg-green-500' : 'bg-gray-200'
-                  }`}
+                  className={`flex-1 h-1 ${step > index + 1 ? 'bg-green-500' : 'bg-gray-200'
+                    }`}
                 />
               )}
             </div>
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
           {step === 1 && (
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <h2 className="text-xl font-bold mb-4">Shipping Address</h2>
-              
+
               {addresses.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-600 mb-4">No addresses saved</p>
@@ -153,11 +153,10 @@ export default function CheckoutPage() {
                   {addresses.map((address) => (
                     <label
                       key={address.id}
-                      className={`block p-4 border-2 rounded-lg cursor-pointer ${
-                        selectedAddressId === address.id
+                      className={`block p-4 border-2 rounded-lg cursor-pointer ${selectedAddressId === address.id
                           ? 'border-black bg-gray-50'
                           : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -204,7 +203,7 @@ export default function CheckoutPage() {
           {step === 2 && (
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <h2 className="text-xl font-bold mb-4">Payment Method</h2>
-              
+
               <div className="space-y-4 mb-6">
                 <label className="block p-4 border-2 rounded-lg cursor-pointer border-black bg-gray-50">
                   <input
@@ -343,7 +342,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-1">
           <div className="bg-gray-50 p-6 rounded-lg sticky top-4">
             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            
+
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>

@@ -7,9 +7,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">STORE</h3>
+            <h3 className="text-white text-lg font-semibold mb-4 flex items-center gap-2">
+              <span className="text-xl">🏪</span>
+              <span>taphoanhadev.com</span>
+            </h3>
             <p className="text-sm mb-4">
-              Your one-stop shop for quality products at great prices.
+              Cửa hàng tạp hóa trực tuyến - Mua sắm dễ dàng, giao hàng nhanh chóng!
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-white transition-colors">
@@ -84,15 +87,15 @@ export default function Footer() {
             <p className="text-sm mb-4">
               Subscribe to get special offers and updates.
             </p>
-            <form className="flex">
+            <form className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
                 placeholder="Your email"
-                className="flex-1 px-4 py-2 rounded-l-lg text-gray-900 focus:outline-none"
+                className="flex-1 px-4 py-2 sm:rounded-l-lg rounded-lg text-gray-900 focus:outline-none min-w-0"
               />
               <button
                 type="submit"
-                className="bg-white text-gray-900 px-4 py-2 rounded-r-lg font-medium hover:bg-gray-100 transition-colors"
+                className="bg-white text-gray-900 px-4 py-2 sm:rounded-r-lg rounded-lg font-medium hover:bg-gray-100 transition-colors whitespace-nowrap"
               >
                 Subscribe
               </button>

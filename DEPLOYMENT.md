@@ -2,6 +2,12 @@
 
 Complete guide for deploying the e-commerce platform to a VPS with Ubuntu 24.04.
 
+## Your VPS Details
+
+- **VPS IP:** 103.199.17.168
+- **Domain:** taphoanhadev.com
+- **Server:** Ubuntu 24.04 with at least 2GB RAM
+
 ## Prerequisites
 
 - Ubuntu 24.04 VPS with at least 2GB RAM
@@ -15,7 +21,7 @@ Complete guide for deploying the e-commerce platform to a VPS with Ubuntu 24.04.
 
 ```bash
 # SSH into your VPS
-ssh root@your-vps-ip
+ssh root@103.199.17.168
 
 # Download and run deployment script
 curl -fsSL https://raw.githubusercontent.com/yourusername/ecommerce/main/deploy.sh | bash
@@ -33,7 +39,7 @@ Follow the steps below for manual deployment.
 
 ```bash
 # SSH into your VPS
-ssh root@your-vps-ip
+ssh root@103.199.17.168
 
 # Update system
 apt update && apt upgrade -y
@@ -52,12 +58,16 @@ curl -fsSL https://get.docker.com | sh
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# Install Docker Compose
+# Install Docker Compose plugin
 sudo apt install -y docker-compose-plugin
 
 # Verify installations
 docker --version
 docker compose version
+
+# Add current user to docker group (optional, to run without sudo)
+sudo usermod -aG docker $USER
+# Log out and back in for group changes to take effect
 
 # Install Git
 sudo apt install -y git
@@ -111,9 +121,9 @@ JWT_SECRET=CHANGE_THIS_MIN_32_CHARACTERS
 JWT_REFRESH_SECRET=CHANGE_THIS_MIN_32_CHARACTERS
 
 # Domain
-CORS_ORIGIN=https://yourdomain.com
-NEXT_PUBLIC_API_URL=https://yourdomain.com/api
-NEXT_PUBLIC_MEDIA_URL=https://yourdomain.com
+CORS_ORIGIN=https://taphoanhadev.com
+NEXT_PUBLIC_API_URL=https://taphoanhadev.com/api
+NEXT_PUBLIC_MEDIA_URL=https://taphoanhadev.com
 
 # Email (SMTP)
 SMTP_HOST=smtp.gmail.com
@@ -143,7 +153,7 @@ nano nginx/default.conf
 cp nginx/temp-http.conf nginx/default.conf
 
 # Update domain in temp config
-sed -i 's/yourdomain.com/YOUR_ACTUAL_DOMAIN/g' nginx/default.conf
+sed -i 's/yourdomain.com/taphoanhadev.com/g' nginx/default.conf
 
 # Start services
 docker compose up -d
@@ -155,15 +165,15 @@ sleep 30
 docker compose run --rm certbot certonly \
   --webroot \
   --webroot-path=/var/www/certbot \
-  --email your-email@example.com \
+  --email admin@taphoanhadev.com \
   --agree-tos \
   --no-eff-email \
-  -d yourdomain.com \
-  -d www.yourdomain.com
+  -d taphoanhadev.com \
+  -d www.taphoanhadev.com
 
 # Switch to HTTPS config
 cp nginx/default.conf.bak nginx/default.conf  # Restore original
-sed -i 's/yourdomain.com/YOUR_ACTUAL_DOMAIN/g' nginx/default.conf
+sed -i 's/yourdomain.com/taphoanhadev.com/g' nginx/default.conf
 
 # Restart nginx
 docker compose restart nginx
@@ -198,8 +208,8 @@ Add these DNS records at your domain registrar:
 
 ```
 Type    Name    Value              TTL
-A       @       YOUR_VPS_IP       300
-A       www     YOUR_VPS_IP       300
+A       @       103.199.17.168     300
+A       www     103.199.17.168     300
 ```
 
 Wait 5-10 minutes for DNS propagation.
@@ -215,10 +225,10 @@ Wait 5-10 minutes for DNS propagation.
 docker compose ps
 
 # Test backend API
-curl https://yourdomain.com/api/health
+curl https://taphoanhadev.com/api/health
 
 # Test frontend
-curl https://yourdomain.com
+curl https://taphoanhadev.com
 
 # Check logs
 docker compose logs backend
@@ -228,9 +238,9 @@ docker compose logs nginx
 
 ### Access the application:
 
-- Frontend: `https://yourdomain.com`
-- Admin Panel: `https://yourdomain.com/admin`
-- API Docs: `https://yourdomain.com/api`
+- Frontend: `https://taphoanhadev.com`
+- Admin Panel: `https://taphoanhadev.com/admin`
+- API Docs: `https://taphoanhadev.com/api`
 
 ### Default credentials:
 
@@ -280,14 +290,14 @@ docker compose restart backend
 docker compose exec postgres pg_dump -U postgres ecommerce_db > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Download backup to local machine
-scp root@your-vps-ip:/opt/ecommerce/backup_*.sql ./
+scp root@103.199.17.168:/opt/ecommerce/backup_*.sql ./
 ```
 
 ### Database Restore
 
 ```bash
 # Upload backup to VPS
-scp ./backup_20240101_120000.sql root@your-vps-ip:/opt/ecommerce/
+scp ./backup_20240101_120000.sql root@103.199.17.168:/opt/ecommerce/
 
 # Restore database
 cat backup_20240101_120000.sql | docker compose exec -T postgres psql -U postgres -d ecommerce_db
@@ -323,7 +333,7 @@ df -h
 
 ```bash
 # Backend health
-curl https://yourdomain.com/api/health
+curl https://taphoanhadev.com/api/health
 
 # Database health
 docker compose exec postgres pg_isready
@@ -444,6 +454,7 @@ docker system prune -a
 ## Support
 
 For issues or questions:
+
 - GitHub Issues: https://github.com/yourusername/ecommerce/issues
 - Documentation: https://yourdomain.com/docs
 - Email: support@yourdomain.com

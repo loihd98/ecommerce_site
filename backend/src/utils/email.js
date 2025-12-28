@@ -17,7 +17,7 @@ transporter.verify((error, success) => {
 export const sendEmail = async ({ to, subject, html, text }) => {
   try {
     const info = await transporter.sendMail({
-      from: `"${process.env.APP_NAME || 'E-Commerce'}" <${config.emailFrom}>`,
+      from: `"${process.env.APP_NAME || '🏪 taphoanhadev.com'}" <${config.emailFrom}>`,
       to,
       subject,
       text,
@@ -34,13 +34,13 @@ export const sendEmail = async ({ to, subject, html, text }) => {
 // Email templates
 export const emailTemplates = {
   welcome: (name) => ({
-    subject: 'Welcome to Our Store!',
+    subject: 'Chào mừng đến với 🏪 taphoanhadev.com!',
     html: `
-      <h1>Welcome ${name}!</h1>
-      <p>Thank you for joining our store. We're excited to have you as a customer.</p>
-      <p>Start shopping now and discover amazing products!</p>
+      <h1>Xin chào ${name}! 🏪</h1>
+      <p>Cảm ơn bạn đã đăng ký tài khoản tại taphoanhadev.com. Chúng tôi rất vui mừng được phục vụ bạn!</p>
+      <p>Bắt đầu mua sắm ngay và khám phá những sản phẩm tuyệt vời!</p>
     `,
-    text: `Welcome ${name}! Thank you for joining our store.`,
+    text: `Xin chào ${name}! Cảm ơn bạn đã đăng ký tại taphoanhadev.com.`,
   }),
   
   emailVerification: (name, verificationLink) => ({

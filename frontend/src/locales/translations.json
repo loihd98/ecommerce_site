@@ -1,0 +1,162 @@
+{
+  "en": {
+    "common": {
+      "loading": "Loading...",
+      "error": "Something went wrong",
+      "noResults": "No results found",
+      "search": "Search",
+      "filter": "Filter",
+      "sort": "Sort",
+      "clear": "Clear",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View",
+      "close": "Close"
+    },
+    "nav": {
+      "home": "Home",
+      "products": "Products",
+      "categories": "Categories",
+      "cart": "Cart",
+      "wishlist": "Wishlist",
+      "account": "Account",
+      "login": "Login",
+      "register": "Register",
+      "logout": "Logout",
+      "admin": "Admin"
+    },
+    "home": {
+      "hero": {
+        "title": "Welcome to 🏪 taphoanhadev.com",
+        "subtitle": "Your friendly online grocery store - Easy shopping, fast delivery!",
+        "shopNow": "Shop Now"
+      },
+      "featured": "Featured Products",
+      "newArrivals": "New Arrivals",
+      "bestSellers": "Best Sellers"
+    },
+    "products": {
+      "title": "Products",
+      "allProducts": "All Products",
+      "viewDetails": "View Details",
+      "addToCart": "Add to Cart",
+      "addToWishlist": "Add to Wishlist",
+      "outOfStock": "Out of Stock",
+      "inStock": "In Stock",
+      "price": "Price",
+      "reviews": "Reviews",
+      "rating": "Rating"
+    },
+    "categories": {
+      "title": "Browse Categories",
+      "subtitle": "Explore our wide range of product categories",
+      "noCategories": "No categories found",
+      "product": "product",
+      "products": "products"
+    },
+    "cart": {
+      "title": "Shopping Cart",
+      "empty": "Your cart is empty",
+      "continueShopping": "Continue Shopping",
+      "checkout": "Proceed to Checkout",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "remove": "Remove",
+      "quantity": "Quantity"
+    },
+    "auth": {
+      "login": "Login",
+      "register": "Register",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "name": "Name",
+      "forgotPassword": "Forgot Password?",
+      "dontHaveAccount": "Don't have an account?",
+      "alreadyHaveAccount": "Already have an account?"
+    }
+  },
+  "vi": {
+    "common": {
+      "loading": "Đang tải...",
+      "error": "Đã xảy ra lỗi",
+      "noResults": "Không tìm thấy kết quả",
+      "search": "Tìm kiếm",
+      "filter": "Lọc",
+      "sort": "Sắp xếp",
+      "clear": "Xóa",
+      "apply": "Áp dụng",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "delete": "Xóa",
+      "edit": "Sửa",
+      "view": "Xem",
+      "close": "Đóng"
+    },
+    "nav": {
+      "home": "Trang chủ",
+      "products": "Sản phẩm",
+      "categories": "Danh mục",
+      "cart": "Giỏ hàng",
+      "wishlist": "Yêu thích",
+      "account": "Tài khoản",
+      "login": "Đăng nhập",
+      "register": "Đăng ký",
+      "logout": "Đăng xuất",
+      "admin": "Quản trị"
+    },
+    "home": {
+      "hero": {
+        "title": "Chào mừng đến 🏪 taphoanhadev.com",
+        "subtitle": "Tạp hóa trực tuyến thân thiện - Mua sắm dễ dàng, giao hàng nhanh!",
+        "shopNow": "Mua ngay"
+      },
+      "featured": "Sản phẩm nổi bật",
+      "newArrivals": "Hàng mới về",
+      "bestSellers": "Bán chạy nhất"
+    },
+    "products": {
+      "title": "Sản phẩm",
+      "allProducts": "Tất cả sản phẩm",
+      "viewDetails": "Xem chi tiết",
+      "addToCart": "Thêm vào giỏ",
+      "addToWishlist": "Yêu thích",
+      "outOfStock": "Hết hàng",
+      "inStock": "Còn hàng",
+      "price": "Giá",
+      "reviews": "Đánh giá",
+      "rating": "Xếp hạng"
+    },
+    "categories": {
+      "title": "Danh mục sản phẩm",
+      "subtitle": "Khám phá các danh mục sản phẩm đa dạng",
+      "noCategories": "Không tìm thấy danh mục",
+      "product": "sản phẩm",
+      "products": "sản phẩm"
+    },
+    "cart": {
+      "title": "Giỏ hàng",
+      "empty": "Giỏ hàng trống",
+      "continueShopping": "Tiếp tục mua sắm",
+      "checkout": "Thanh toán",
+      "subtotal": "Tạm tính",
+      "total": "Tổng cộng",
+      "remove": "Xóa",
+      "quantity": "Số lượng"
+    },
+    "auth": {
+      "login": "Đăng nhập",
+      "register": "Đăng ký",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "name": "Họ tên",
+      "forgotPassword": "Quên mật khẩu?",
+      "dontHaveAccount": "Chưa có tài khoản?",
+      "alreadyHaveAccount": "Đã có tài khoản?"
+    }
+  }
+}

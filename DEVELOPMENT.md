@@ -3,6 +3,7 @@
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - Docker & Docker Compose
 - Git
@@ -10,25 +11,30 @@
 ### Initial Setup
 
 1. **Clone repository**
+
 ```bash
 git clone <repository-url>
 cd web_ban_hang
 ```
 
-2. **Setup environment**
+2. **Setup backend environment**
+
 ```bash
-cp .env.dev .env
+cd backend
+cp .env.example .env
+# Edit .env with your database credentials and API keys
 ```
 
 3. **Start database**
+
 ```bash
-docker-compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml up -d
 ```
 
 4. **Install dependencies**
+
 ```bash
-# Backend
-cd backend
+# Backend (from backend/ directory)
 npm install
 npx prisma generate
 npx prisma migrate dev
@@ -40,6 +46,7 @@ npm install
 ```
 
 5. **Run development servers**
+
 ```bash
 # Backend (Terminal 1)
 cd backend
@@ -51,6 +58,7 @@ npm run dev
 ```
 
 6. **Access applications**
+
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:5000
 - API Health: http://localhost:5000/health
@@ -121,12 +129,14 @@ web_ban_hang/
 ### Backend Development
 
 **Run in development mode:**
+
 ```bash
 cd backend
 npm run dev  # Uses nodemon for auto-reload
 ```
 
 **Database operations:**
+
 ```bash
 # Generate Prisma client
 npx prisma generate
@@ -145,6 +155,7 @@ npm run db:seed
 ```
 
 **Testing:**
+
 ```bash
 npm test
 ```
@@ -152,18 +163,21 @@ npm test
 ### Frontend Development
 
 **Run in development mode:**
+
 ```bash
 cd frontend
 npm run dev
 ```
 
 **Build for production:**
+
 ```bash
 npm run build
 npm start
 ```
 
 **Linting:**
+
 ```bash
 npm run lint
 ```
@@ -183,6 +197,7 @@ npm run lint
 - Keep functions small and focused
 
 **Example:**
+
 ```javascript
 // ✅ Good
 export const getUserById = async (userId) => {
@@ -209,6 +224,7 @@ export const get = async (id) => {
 - Implement proper error handling
 
 **Example:**
+
 ```typescript
 // ✅ Good
 interface ProductCardProps {
@@ -255,6 +271,7 @@ const categories = await prisma.category.createMany({
 ```
 
 Run seed:
+
 ```bash
 npm run db:seed
 ```
@@ -293,27 +310,32 @@ npm test -- --coverage      # With coverage
 ## Docker Development
 
 ### Start all services:
+
 ```bash
 docker-compose up -d
 ```
 
 ### View logs:
+
 ```bash
 docker-compose logs -f
 docker-compose logs -f backend
 ```
 
 ### Rebuild after code changes:
+
 ```bash
 docker-compose up -d --build
 ```
 
 ### Stop services:
+
 ```bash
 docker-compose down
 ```
 
 ### Clean up:
+
 ```bash
 docker-compose down -v  # Remove volumes
 docker system prune -a  # Clean Docker cache
@@ -324,6 +346,7 @@ docker system prune -a  # Clean Docker cache
 ## Environment Variables
 
 ### Backend (.env)
+
 ```env
 DATABASE_URL=postgresql://user:pass@localhost:5432/db
 JWT_SECRET=your-secret
@@ -336,6 +359,7 @@ SMTP_PASSWORD=your-app-password
 ```
 
 ### Frontend (.env.local)
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 NEXT_PUBLIC_MEDIA_URL=http://localhost:5000
@@ -349,6 +373,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
 ### Backend Debugging
 
 Add breakpoints in VS Code:
+
 ```json
 // .vscode/launch.json
 {
@@ -367,6 +392,7 @@ Use React DevTools and Redux DevTools browser extensions.
 ### Database Debugging
 
 Use Prisma Studio:
+
 ```bash
 npx prisma studio
 ```
@@ -376,6 +402,7 @@ npx prisma studio
 ## Common Issues
 
 ### Port already in use
+
 ```bash
 # Find process using port
 lsof -i :5000  # or :3000
@@ -384,6 +411,7 @@ kill -9 <PID>
 ```
 
 ### Database connection failed
+
 ```bash
 # Check database is running
 docker-compose ps
@@ -392,6 +420,7 @@ docker-compose restart postgres
 ```
 
 ### Module not found
+
 ```bash
 # Clear cache and reinstall
 rm -rf node_modules package-lock.json
@@ -409,6 +438,7 @@ npm install
 5. Create pull request
 
 ### Commit Message Format
+
 ```
 type(scope): subject
 
@@ -420,6 +450,7 @@ footer
 Types: feat, fix, docs, style, refactor, test, chore
 
 Example:
+
 ```
 feat(auth): add Google OAuth login
 

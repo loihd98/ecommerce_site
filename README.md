@@ -1,6 +1,11 @@
-# 🛍️ Modern E-Commerce Platform
+# 🏪 taphoanhadev.com - Tạp Hóa Online
 
-A full-stack e-commerce website built with Next.js 14, Express.js, PostgreSQL, and Docker.
+Cửa hàng tạp hóa trực tuyến hiện đại được xây dựng với Next.js 14, Express.js, PostgreSQL và Docker.
+
+## 🏪 Về taphoanhadev.com
+
+Tạp hóa online thân thiện - Mua sắm dễ dàng, giao hàng nhanh chóng!
+Website: **taphoanhadev.com** | IP: **103.199.17.168**
 
 ## 🚀 Features
 
@@ -18,6 +23,7 @@ A full-stack e-commerce website built with Next.js 14, Express.js, PostgreSQL, a
 ## 🏗️ Tech Stack
 
 ### Frontend
+
 - Next.js 14+ (App Router)
 - TypeScript
 - TailwindCSS
@@ -26,6 +32,7 @@ A full-stack e-commerce website built with Next.js 14, Express.js, PostgreSQL, a
 - React Hook Form
 
 ### Backend
+
 - Node.js 18+
 - Express.js
 - Prisma ORM
@@ -34,6 +41,7 @@ A full-stack e-commerce website built with Next.js 14, Express.js, PostgreSQL, a
 - Multer (File uploads)
 
 ### Infrastructure
+
 - Docker & Docker Compose
 - Nginx (Reverse Proxy)
 - Let's Encrypt SSL
@@ -41,41 +49,53 @@ A full-stack e-commerce website built with Next.js 14, Express.js, PostgreSQL, a
 
 ## 📦 Installation
 
+### Quick Start
+
+For fastest setup, see **[QUICKSTART.md](QUICKSTART.md)** for step-by-step instructions.
+
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - Docker & Docker Compose
 - Git
 
 ### Development Setup
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/yourusername/ecommerce.git
 cd ecommerce
 ```
 
-2. **Setup environment variables**
+2. **Setup backend environment**
+
 ```bash
-cp .env.dev .env
-# Edit .env with your configurations
+cd backend
+cp .env.example .env
+# Edit .env with your database credentials and API keys
 ```
 
 3. **Start PostgreSQL with Docker**
+
 ```bash
-docker-compose -f docker-compose.dev.yml up -d
+cd ..
+docker compose -f docker-compose.dev.yml up -d
 ```
 
 4. **Setup Backend**
+
 ```bash
 cd backend
 npm install
 npx prisma generate
 npx prisma migrate dev
-npm run seed  # Optional: seed initial data
+npm run db:seed  # Optional: seed initial data
 npm run dev
 ```
 
 5. **Setup Frontend**
+
 ```bash
 cd frontend
 npm install
@@ -83,11 +103,13 @@ npm run dev
 ```
 
 6. **Access the application**
+
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:5000
 - API Health: http://localhost:5000/health
 
 ### Default Credentials
+
 ```
 Admin:
 - Email: admin@example.com
@@ -100,9 +122,10 @@ User:
 
 ## 📚 Documentation
 
-- **[API Documentation](API.md)** - Complete API reference with examples
-- **[Deployment Guide](DEPLOYMENT.md)** - Step-by-step production deployment
-- **[Development Guide](DEVELOPMENT.md)** - Development workflow and best practices
+- **[⚡ Quick Start Guide](QUICKSTART.md)** - Fastest way to get started (5 minutes)
+- **[📖 API Documentation](API.md)** - Complete API reference with examples
+- **[🚀 Deployment Guide](DEPLOYMENT.md)** - Step-by-step production deployment
+- **[💻 Development Guide](DEVELOPMENT.md)** - Development workflow and best practices
 
 ## 🐳 Docker Production Deployment
 
@@ -177,12 +200,13 @@ docker compose logs -f
 docker compose exec backend npx prisma migrate deploy
 
 # Seed initial data (optional)
-docker compose exec backend npm run seed
+docker compose exec backend npm run db:seed
 ```
 
 ### 5. DNS Configuration
 
 Add these records at your domain registrar:
+
 ```
 Type    Name    Value           TTL
 A       @       your-vps-ip     300
@@ -234,22 +258,26 @@ A       www     your-vps-ip     300
 ## 🔧 Maintenance
 
 ### Backup Database
+
 ```bash
 docker compose exec postgres pg_dump -U postgres ecommerce_db > backup_$(date +%Y%m%d).sql
 ```
 
 ### Restore Database
+
 ```bash
 cat backup_20240115.sql | docker compose exec -T postgres psql -U postgres -d ecommerce_db
 ```
 
 ### Update Application
+
 ```bash
 git pull origin main
 docker compose up -d --build
 ```
 
 ### View Logs
+
 ```bash
 # All services
 docker compose logs -f
@@ -261,6 +289,7 @@ docker compose logs -f nginx
 ```
 
 ### Restart Services
+
 ```bash
 # All services
 docker compose restart
@@ -272,6 +301,7 @@ docker compose restart backend
 ## 📚 API Documentation
 
 See [API.md](API.md) for complete API reference including:
+
 - All endpoints with request/response examples
 - Authentication flow
 - Query parameters and filters
@@ -281,6 +311,7 @@ See [API.md](API.md) for complete API reference including:
 Quick reference:
 
 ### Authentication Endpoints
+
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `POST /api/auth/logout` - User logout
@@ -291,6 +322,7 @@ Quick reference:
 - `GET /api/auth/facebook` - Facebook OAuth
 
 ### Product Endpoints
+
 - `GET /api/products` - Get all products (with filters)
 - `GET /api/products/:id` - Get product by ID
 - `POST /api/products` - Create product (Admin)
@@ -298,6 +330,7 @@ Quick reference:
 - `DELETE /api/products/:id` - Delete product (Admin)
 
 ### Cart Endpoints
+
 - `GET /api/cart` - Get user cart
 - `POST /api/cart` - Add item to cart
 - `PUT /api/cart/:itemId` - Update cart item
@@ -305,6 +338,7 @@ Quick reference:
 - `DELETE /api/cart` - Clear cart
 
 ### Order Endpoints
+
 - `GET /api/orders` - Get user orders
 - `GET /api/orders/:id` - Get order by ID
 - `POST /api/orders` - Create order
@@ -328,6 +362,7 @@ Quick reference:
 ## 🎨 UI Components
 
 The project uses a minimal modern design with:
+
 - Clean typography
 - Generous whitespace
 - Subtle animations (Framer Motion)

@@ -29,7 +29,6 @@ export default function ProductDetailPage() {
   useEffect(() => {
     if (params.slug) {
       fetchProduct(params.slug as string);
-      fetchReviews(params.slug as string);
     }
   }, [params.slug]);
 
@@ -37,12 +36,19 @@ export default function ProductDetailPage() {
     setLoading(true);
     try {
       const response = await api.get(`/products/${slug}`);
-      setProduct(response.data.data);
-      if (response.data.data.id) {
-        fetchRelatedProducts(response.data.data.id);
+      const productData = response.data.data;
+      // Ensure images is always an array
+      if (productData && !Array.isArray(productData.images)) {
+        productData.images = [];
       }
-    } catch (error) {
+      setProduct(productData);
+      if (productData?.id) {
+        fetchRelatedProducts(productData.id);
+        fetchReviews(productData.id);
+      }
+    } catch (error: any) {
       console.error('Failed to fetch product:', error);
+      setProduct(null);
     } finally {
       setLoading(false);
     }
@@ -51,24 +57,28 @@ export default function ProductDetailPage() {
   const fetchReviews = async (productId: string) => {
     try {
       const response = await api.get(`/reviews/product/${productId}`);
-      setReviews(response.data.data || []);
+      const reviewsData = response.data.data || response.data || [];
+      setReviews(Array.isArray(reviewsData) ? reviewsData : []);
     } catch (error) {
       console.error('Failed to fetch reviews:', error);
+      setReviews([]);
     }
   };
 
   const fetchRelatedProducts = async (productId: string) => {
     try {
       const response = await api.get(`/products/${productId}/related`);
-      setRelatedProducts(response.data.data || []);
+      const productsData = response.data.data || response.data || [];
+      setRelatedProducts(Array.isArray(productsData) ? productsData : []);
     } catch (error) {
       console.error('Failed to fetch related products:', error);
+      setRelatedProducts([]);
     }
   };
 
   const handleAddToCart = async () => {
     if (!product) return;
-    
+
     setAddingToCart(true);
     try {
       await dispatch(addToCart({ productId: product.id, quantity })).unwrap();
@@ -89,7 +99,7 @@ export default function ProductDetailPage() {
       router.push('/login');
       return;
     }
-    
+
     try {
       if (isWishlisted) {
         await api.delete(`/wishlist/${product?.id}`);
@@ -170,9 +180,8 @@ export default function ProductDetailPage() {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square bg-gray-100 rounded-lg overflow-hidden ${
-                    selectedImage === index ? 'ring-2 ring-black' : ''
-                  }`}
+                  className={`aspect-square bg-gray-100 rounded-lg overflow-hidden ${selectedImage === index ? 'ring-2 ring-black' : ''
+                    }`}
                 >
                   <Image
                     src={`${process.env.NEXT_PUBLIC_MEDIA_URL}${image}`}
@@ -190,18 +199,17 @@ export default function ProductDetailPage() {
         {/* Info */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-          
+
           {/* Rating */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
                 <StarIcon
                   key={i}
-                  className={`h-5 w-5 ${
-                    i < Math.floor(product.averageRating || 0)
+                  className={`h-5 w-5 ${i < Math.floor(product.averageRating || 0)
                       ? 'text-yellow-400 fill-current'
                       : 'text-gray-300'
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -313,9 +321,8 @@ export default function ProductDetailPage() {
                       {[...Array(5)].map((_, i) => (
                         <StarIconSolid
                           key={i}
-                          className={`h-4 w-4 ${
-                            i < review.rating ? 'text-yellow-400' : 'text-gray-300'
-                          }`}
+                          className={`h-4 w-4 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'
+                            }`}
                         />
                       ))}
                     </div>

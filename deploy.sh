@@ -14,8 +14,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-DOMAIN="yourdomain.com"
-EMAIL="your-email@example.com"
+DOMAIN="taphoanhadev.com"
+EMAIL="admin@taphoanhadev.com"
 APP_DIR="/opt/ecommerce"
 
 # Check if running as root
@@ -105,11 +105,11 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   docker compose run --rm certbot certonly \
     --webroot \
     --webroot-path=/var/www/certbot \
-    --email "$EMAIL" \
+    --email "admin@taphoanhadev.com" \
     --agree-tos \
     --no-eff-email \
-    -d "$DOMAIN" \
-    -d "www.$DOMAIN"
+    -d "taphoanhadev.com" \
+    -d "www.taphoanhadev.com"
   
   # Switch to HTTPS config
   cp nginx/https.conf nginx/default.conf

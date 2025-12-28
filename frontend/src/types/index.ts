@@ -5,7 +5,7 @@ export interface User {
   name: string;
   avatar?: string;
   phone?: string;
-  role: 'USER' | 'ADMIN';
+  role: "USER" | "ADMIN";
   isEmailVerified: boolean;
   createdAt: string;
 }
@@ -85,8 +85,14 @@ export interface CartState {
 }
 
 // Order types
-export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
-export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+export type OrderStatus =
+  | "PENDING"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "REFUNDED";
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
 
 export interface OrderItem {
   id: string;
@@ -119,6 +125,11 @@ export interface Order {
   id: string;
   orderNumber: string;
   userId: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
   addressId: string;
   address: Address;
   subtotal: number;

@@ -38,9 +38,11 @@ export default function ProductsPage() {
   const fetchCategories = async () => {
     try {
       const response = await api.get('/categories');
-      setCategories(response.data.data || []);
+      const categoriesData = response.data.data || response.data || [];
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
+      setCategories([]);
     }
   };
 
@@ -59,14 +61,20 @@ export default function ProductsPage() {
       if (filters.maxPrice) params.maxPrice = filters.maxPrice;
 
       const response = await api.get('/products', { params });
-      setProducts(response.data.data.products || []);
-      setPagination({
-        page: response.data.data.pagination.page,
-        totalPages: response.data.data.pagination.totalPages,
-        totalCount: response.data.data.pagination.totalCount,
-      });
+      const data = response.data.data || response.data || {};
+      const productsData = data.products || [];
+      setProducts(Array.isArray(productsData) ? productsData : []);
+
+      if (data.pagination) {
+        setPagination({
+          page: data.pagination.page || 1,
+          totalPages: data.pagination.totalPages || 1,
+          totalCount: data.pagination.totalCount || 0,
+        });
+      }
     } catch (error) {
       console.error('Failed to fetch products:', error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { useAppSelector } from '@/store/hooks';
+import AdminLayout from '@/components/admin/AdminLayout';
 import {
   ShoppingBagIcon,
   UsersIcon,
@@ -15,7 +16,7 @@ import {
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-  
+
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalRevenue: 0,
@@ -37,10 +38,18 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const response = await api.get('/admin/dashboard');
-      setStats(response.data.data.stats);
-      setRecentOrders(response.data.data.recentOrders || []);
+      const data = response.data.data || response.data || {};
+      setStats(data.stats || {
+        totalOrders: 0,
+        totalRevenue: 0,
+        totalProducts: 0,
+        totalUsers: 0,
+      });
+      const ordersData = data.recentOrders || [];
+      setRecentOrders(Array.isArray(ordersData) ? ordersData : []);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      setRecentOrders([]);
     } finally {
       setLoading(false);
     }
@@ -60,7 +69,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <AdminLayout>
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-gray-200 rounded w-1/4" />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -69,7 +78,7 @@ export default function AdminDashboard() {
             ))}
           </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
@@ -101,37 +110,12 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <Link
-          href="/"
-          className="text-sm text-gray-600 hover:text-black"
-        >
-          ← Back to Store
-        </Link>
-      </div>
-
-      {/* Quick Links */}
-      <div className="mb-8 flex flex-wrap gap-4">
-        <Link
-          href="/admin/products"
-          className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-        >
-          Manage Products
-        </Link>
-        <Link
-          href="/admin/orders"
-          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-        >
-          Manage Orders
-        </Link>
-        <Link
-          href="/admin/users"
-          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-        >
-          Manage Users
-        </Link>
+    <AdminLayout>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="mt-2 text-sm text-gray-600">
+          Welcome back, {user?.name}! Here's what's happening today.
+        </p>
       </div>
 
       {/* Stats Grid */}
@@ -139,7 +123,7 @@ export default function AdminDashboard() {
         {statCards.map((stat) => (
           <div
             key={stat.title}
-            className="bg-white border border-gray-200 rounded-lg p-6"
+            className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-lg ${stat.color}`}>
@@ -147,65 +131,81 @@ export default function AdminDashboard() {
               </div>
             </div>
             <h3 className="text-gray-600 text-sm font-medium mb-1">{stat.title}</h3>
-            <p className="text-3xl font-bold">{stat.value}</p>
+            <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
           </div>
         ))}
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h2 className="text-xl font-bold mb-4">Recent Orders</h2>
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+            <Link
+              href="/admin/orders"
+              className="text-sm text-black hover:underline"
+            >
+              View all →
+            </Link>
+          </div>
+        </div>
         {recentOrders.length === 0 ? (
-          <p className="text-gray-600">No recent orders</p>
+          <div className="p-6 text-center text-gray-500">
+            No recent orders
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left py-3 px-6 font-medium text-xs text-gray-500 uppercase tracking-wider">
                     Order #
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">
+                  <th className="text-left py-3 px-6 font-medium text-xs text-gray-500 uppercase tracking-wider">
                     Customer
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">
+                  <th className="text-left py-3 px-6 font-medium text-xs text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">
+                  <th className="text-left py-3 px-6 font-medium text-xs text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="text-right py-3 px-4 font-semibold text-sm text-gray-600">
+                  <th className="text-right py-3 px-6 font-medium text-xs text-gray-500 uppercase tracking-wider">
                     Total
                   </th>
-                  <th className="text-right py-3 px-4 font-semibold text-sm text-gray-600">
+                  <th className="text-right py-3 px-6 font-medium text-xs text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {recentOrders.map((order) => (
-                  <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4">#{order.orderNumber}</td>
-                    <td className="py-3 px-4">{order.user?.name}</td>
-                    <td className="py-3 px-4">
+                  <tr key={order.id} className="hover:bg-gray-50">
+                    <td className="py-4 px-6 text-sm font-medium text-gray-900">
+                      #{order.orderNumber}
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-700">
+                      {order.user?.name || 'N/A'}
+                    </td>
+                    <td className="py-4 px-6 text-sm text-gray-700">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-6">
                       <span
-                        className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
                           order.status
                         )}`}
                       >
                         {order.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right font-semibold">
+                    <td className="py-4 px-6 text-sm font-semibold text-gray-900 text-right">
                       ${order.total.toFixed(2)}
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-4 px-6 text-right">
                       <Link
                         href={`/admin/orders/${order.id}`}
-                        className="text-black hover:underline text-sm"
+                        className="text-black hover:underline text-sm font-medium"
                       >
                         View
                       </Link>
@@ -217,6 +217,6 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
-    </div>
+    </AdminLayout>
   );
 }

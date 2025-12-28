@@ -13,7 +13,7 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  
+
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const success = searchParams.get('success') === 'true';
@@ -32,9 +32,15 @@ export default function OrderDetailPage() {
     setLoading(true);
     try {
       const response = await api.get(`/orders/${orderId}`);
-      setOrder(response.data.data);
+      const orderData = response.data.data;
+      // Ensure items is always an array
+      if (orderData && !Array.isArray(orderData.items)) {
+        orderData.items = [];
+      }
+      setOrder(orderData);
     } catch (error) {
       console.error('Failed to fetch order:', error);
+      setOrder(null);
     } finally {
       setLoading(false);
     }
@@ -189,7 +195,7 @@ export default function OrderDetailPage() {
         <div className="lg:col-span-1">
           <div className="border border-gray-200 rounded-lg p-6 sticky top-4">
             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            
+
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
@@ -215,11 +221,10 @@ export default function OrderDetailPage() {
               <p className="text-sm text-gray-600 mb-1">Payment Method</p>
               <p className="font-semibold">{order.paymentMethod}</p>
               <span
-                className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
-                  order.paymentStatus === 'PAID'
+                className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${order.paymentStatus === 'PAID'
                     ? 'bg-green-100 text-green-800'
                     : 'bg-yellow-100 text-yellow-800'
-                }`}
+                  }`}
               >
                 {order.paymentStatus}
               </span>

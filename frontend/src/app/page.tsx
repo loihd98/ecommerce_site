@@ -18,9 +18,11 @@ export default function HomePage() {
   const fetchFeaturedProducts = async () => {
     try {
       const response = await api.get('/products/featured?limit=4');
-      setFeaturedProducts(response.data.data || []);
+      const productsData = response.data.data || response.data || [];
+      setFeaturedProducts(Array.isArray(productsData) ? productsData : []);
     } catch (error) {
       console.error('Failed to fetch featured products:', error);
+      setFeaturedProducts([]);
     } finally {
       setLoading(false);
     }
@@ -28,15 +30,20 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative bg-gray-50 py-20 sm:py-32">
+      <section className="relative bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-20 sm:py-32">
         <div className="container-custom">
           <div className="max-w-3xl">
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-gray-900 mb-6">
-              Discover Your Style
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Shop the latest trends in fashion, electronics, and lifestyle products.
-              Free shipping on orders over $100.
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-6xl">🏪</span>
+              <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
+                taphoanhadev.com
+              </h1>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
+              Tạp Hóa Online Thân Thiện
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+              Mua sắm dễ dàng, giao hàng nhanh chóng. Khám phá hàng nghìn sản phẩm chất lượng với giá tốt nhất!
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/products" className="btn-primary">

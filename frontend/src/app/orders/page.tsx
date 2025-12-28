@@ -20,7 +20,7 @@ interface Order {
 export default function OrdersPage() {
   const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -42,13 +42,19 @@ export default function OrdersPage() {
       const response = await api.get('/orders', {
         params: { page: pagination.page, limit: 10 },
       });
-      setOrders(response.data.data.orders || []);
-      setPagination({
-        page: response.data.data.pagination.page,
-        totalPages: response.data.data.pagination.totalPages,
-      });
+      const data = response.data.data || response.data || {};
+      const ordersData = data.orders || [];
+      setOrders(Array.isArray(ordersData) ? ordersData : []);
+
+      if (data.pagination) {
+        setPagination({
+          page: data.pagination.page || 1,
+          totalPages: data.pagination.totalPages || 1,
+        });
+      }
     } catch (error) {
       console.error('Failed to fetch orders:', error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
