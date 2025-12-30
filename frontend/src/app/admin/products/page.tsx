@@ -62,7 +62,18 @@ export default function AdminProductsPage() {
             const response = await api.get('/products', { params });
             const data = response.data.data || response.data || {};
             const productsData = data.products || [];
-            setProducts(Array.isArray(productsData) ? productsData : []);
+
+            // Clean image arrays for all products
+            const cleanedProducts = (Array.isArray(productsData) ? productsData : []).map((product: any) => {
+                if (product && Array.isArray(product.images)) {
+                    product.images = product.images.filter((img: any) => img && typeof img === 'string' && img.trim() !== '');
+                } else {
+                    product.images = [];
+                }
+                return product;
+            });
+
+            setProducts(cleanedProducts);
 
             if (data.pagination) {
                 setTotalPages(data.pagination.totalPages || 1);
@@ -245,18 +256,18 @@ export default function AdminProductsPage() {
                                         </td>
                                         <td className="py-4 px-6">
                                             <span className={`text-sm font-medium ${product.stock > 10
-                                                    ? 'text-green-600'
-                                                    : product.stock > 0
-                                                        ? 'text-yellow-600'
-                                                        : 'text-red-600'
+                                                ? 'text-green-600'
+                                                : product.stock > 0
+                                                    ? 'text-yellow-600'
+                                                    : 'text-red-600'
                                                 }`}>
                                                 {product.stock}
                                             </span>
                                         </td>
                                         <td className="py-4 px-6">
                                             <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${product.isActive
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-gray-100 text-gray-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-gray-100 text-gray-800'
                                                 }`}>
                                                 {product.isActive ? 'Active' : 'Inactive'}
                                             </span>

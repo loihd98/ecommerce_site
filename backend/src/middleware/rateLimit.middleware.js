@@ -1,5 +1,5 @@
-import rateLimit from 'express-rate-limit';
-import { config } from '../config/config.js';
+import rateLimit from "express-rate-limit";
+import { config } from "../config/config.js";
 
 // General rate limiter
 export const rateLimiter = rateLimit({
@@ -7,7 +7,7 @@ export const rateLimiter = rateLimit({
   max: config.rateLimit.max,
   message: {
     success: false,
-    message: 'Too many requests, please try again later',
+    message: "Too many requests, please try again later",
     statusCode: 429,
   },
   standardHeaders: true,
@@ -20,7 +20,7 @@ export const authRateLimiter = rateLimit({
   max: config.rateLimit.authMax,
   message: {
     success: false,
-    message: 'Too many authentication attempts, please try again later',
+    message: "Too many authentication attempts, please try again later",
     statusCode: 429,
   },
   standardHeaders: true,
@@ -31,10 +31,10 @@ export const authRateLimiter = rateLimit({
 // Payment rate limiter
 export const paymentRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 3,
+  max: config.nodeEnv === "production" ? 3 : 100, // 100 for dev, 3 for production
   message: {
     success: false,
-    message: 'Too many payment attempts, please try again later',
+    message: "Too many payment attempts, please try again later",
     statusCode: 429,
   },
   standardHeaders: true,

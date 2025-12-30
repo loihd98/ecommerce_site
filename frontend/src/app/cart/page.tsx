@@ -128,7 +128,30 @@ export default function CartPage() {
                 <p className="text-sm text-gray-600 mt-1">
                   ${item.product.price.toFixed(2)} each
                 </p>
-                
+
+                {/* Variant Info */}
+                {(item.color || item.size) && (
+                  <div className="flex gap-3 mt-2 text-sm text-gray-600">
+                    {item.color && (
+                      <span>
+                        <span className="font-medium">Color:</span> {item.color}
+                      </span>
+                    )}
+                    {item.size && (
+                      <span>
+                        <span className="font-medium">Size:</span> {item.size}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Note */}
+                {item.note && (
+                  <p className="text-sm text-gray-600 mt-2 italic">
+                    Note: {item.note}
+                  </p>
+                )}
+
                 {/* Quantity Controls */}
                 <div className="flex items-center gap-3 mt-3">
                   <button
@@ -169,7 +192,7 @@ export default function CartPage() {
         <div className="lg:col-span-1">
           <div className="bg-gray-50 p-6 rounded-lg sticky top-4">
             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            
+
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>

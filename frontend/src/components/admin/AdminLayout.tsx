@@ -11,6 +11,7 @@ import {
     CubeIcon,
     UsersIcon,
     FolderIcon,
+    ChatBubbleLeftRightIcon,
     Bars3Icon,
     XMarkIcon,
     ArrowLeftOnRectangleIcon,
@@ -28,6 +29,7 @@ const navigation = [
     { name: 'Orders', href: '/admin/orders', icon: ShoppingBagIcon },
     { name: 'Categories', href: '/admin/categories', icon: FolderIcon },
     { name: 'Users', href: '/admin/users', icon: UsersIcon },
+    { name: 'Comments', href: '/admin/comments', icon: ChatBubbleLeftRightIcon },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -91,8 +93,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                     key={item.name}
                                     href={item.href}
                                     className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${active
-                                            ? 'bg-black text-white'
-                                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                        ? 'bg-black text-white'
+                                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                                         }`}
                                 >
                                     <item.icon className="w-5 h-5 mr-3" />

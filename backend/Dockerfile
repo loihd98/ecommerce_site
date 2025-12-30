@@ -1,16 +1,15 @@
-FROM node:18-alpine
+FROM node:18-slim
 
-# Install system dependencies
-RUN apk update && apk add --no-cache \
-    openssl \
-    ca-certificates \
-    libc6-compat \
-    && rm -rf /var/cache/apk/*
+# Install OpenSSL 3.x and dependencies BEFORE Prisma
+RUN apt-get update -y && \
+    apt-get install -y openssl libssl3 ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 # Copy package files
-COPY package.json yarn.lock* ./
+COPY package.json ./
+COPY yarn.lock* ./
 
 # Install dependencies
 ARG NODE_ENV=production

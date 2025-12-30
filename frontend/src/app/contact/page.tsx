@@ -35,10 +35,10 @@ export default function ContactPage() {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      
+
       // In production, replace with actual API call:
       // await api.post('/contact', formData);
-      
+
       setSuccess(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
@@ -65,7 +65,7 @@ export default function ContactPage() {
             {/* Contact Cards */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Get in Touch</h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -75,8 +75,10 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-900">Phone</p>
-                    <p className="mt-1 text-sm text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-sm text-gray-600">Mon-Fri, 9am-6pm EST</p>
+                    <p className="mt-1 text-sm text-gray-600">
+                      <a href="tel:0342429911" className="hover:text-blue-600">0342 429 911</a>
+                    </p>
+                    <p className="text-sm text-gray-600">Mon-Fri, 9am-6pm</p>
                   </div>
                 </div>
 
@@ -88,7 +90,7 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-900">Email</p>
-                    <p className="mt-1 text-sm text-gray-600">support@example.com</p>
+                    <p className="mt-1 text-sm text-gray-600">support@taphoanhadev.com</p>
                     <p className="text-sm text-gray-600">We'll reply within 24 hours</p>
                   </div>
                 </div>
@@ -100,13 +102,13 @@ export default function ContactPage() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-900">Office</p>
+                    <p className="text-sm font-medium text-gray-900">Address</p>
                     <p className="mt-1 text-sm text-gray-600">
-                      123 Commerce Street
+                      CT10 - Chung cư Đại Thanh
                       <br />
-                      New York, NY 10001
+                      Kiên Hưng, Hà Đông
                       <br />
-                      United States
+                      Hà Nội, Việt Nam
                     </p>
                   </div>
                 </div>

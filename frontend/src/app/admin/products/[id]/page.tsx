@@ -20,6 +20,7 @@ export default function EditProductPage() {
         name: '',
         description: '',
         shortDesc: '',
+        adminNote: '',
         price: '',
         comparePrice: '',
         sku: '',
@@ -52,6 +53,7 @@ export default function EditProductPage() {
                 name: product.name,
                 description: product.description || '',
                 shortDesc: product.shortDesc || '',
+                adminNote: product.adminNote || '',
                 price: product.price.toString(),
                 comparePrice: product.comparePrice?.toString() || '',
                 sku: product.sku || '',
@@ -161,6 +163,21 @@ export default function EditProductPage() {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                                 placeholder="Detailed product description"
                             />
+                        </div>
+
+                        {/* Admin Note */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Admin Note (Visible to customers)
+                            </label>
+                            <textarea
+                                rows={3}
+                                value={formData.adminNote}
+                                onChange={(e) => setFormData({ ...formData, adminNote: e.target.value })}
+                                className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                                placeholder="Important information for customers (e.g., shipping notice, warranty info, usage instructions)"
+                            />
+                            <p className="mt-1 text-sm text-gray-500">This note will be highlighted on the product page</p>
                         </div>
 
                         {/* Price & Compare Price */}

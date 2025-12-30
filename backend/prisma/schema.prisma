@@ -54,6 +54,7 @@ model User {
   addresses    Address[]
   orders       Order[]
   reviews      Review[]
+  comments     Comment[]
   wishlist     Wishlist[]
   cart         CartItem[]
   
@@ -94,6 +95,16 @@ model Product {
   
   images      String[] // Array of image URLs
   
+  // Variants
+  colors      String[] // Available colors
+  sizes       String[] // Available sizes
+  
+  // Affiliate
+  affiliateLink String? // Affiliate/external link
+  
+  // Admin Note
+  adminNote String? // Admin's note/description for customers
+  
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
   
@@ -120,6 +131,7 @@ model Product {
   // Relations
   variants    ProductVariant[]
   reviews     Review[]
+  comments    Comment[]
   orderItems  OrderItem[]
   wishlist    Wishlist[]
   cart        CartItem[]
@@ -138,7 +150,9 @@ model ProductVariant {
   stock     Int      @default(0)
   
   // Attributes
-  attributes Json    // {"color": "Red", "size": "Large"}
+  color     String?  // "Red"
+  size      String?  // "Large"
+  attributes Json?    // Additional attributes
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -219,6 +233,9 @@ model OrderItem {
   // Snapshot data
   productName String
   productImage String?
+  color     String?
+  size      String?
+  note      String?
   
   createdAt DateTime @default(now())
   
@@ -248,6 +265,27 @@ model Review {
   @@map("reviews")
 }
 
+model Comment {
+  id        String   @id @default(cuid())
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  content   String
+  authorName String? // For guest comments
+  authorEmail String? // For guest comments
+  
+  isApproved Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("comments")
+}
+
 model Wishlist {
   id        String   @id @default(cuid())
   
@@ -273,11 +311,14 @@ model CartItem {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   
   quantity  Int      @default(1)
+  color     String?  // Selected color
+  size      String?  // Selected size
+  note      String?  // Customer note
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  @@unique([userId, productId])
+  @@unique([userId, productId, color, size])
   @@map("cart_items")
 }
 

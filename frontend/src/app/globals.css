@@ -12,14 +12,15 @@
     @apply border-gray-200;
   }
 
+  html,
   body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply bg-white text-gray-900 antialiased overflow-x-hidden;
   }
 }
 
 @layer components {
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full;
   }
 
   .btn {
@@ -48,6 +49,41 @@
 
   .link {
     @apply text-gray-900 hover:text-gray-600 transition-colors duration-200 underline-offset-4 hover:underline;
+  }
+
+  /* Responsive table wrapper */
+  .table-responsive {
+    @apply overflow-x-auto -mx-4 sm:mx-0;
+  }
+
+  /* Prevent text overflow */
+  .text-truncate {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  /* Scrollbar Styling */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 3px;
+  }
+
+  .scrollbar-track-gray-100::-webkit-scrollbar-track {
+    background-color: #f3f4f6;
+    border-radius: 3px;
+  }
+
+  /* Shimmer animation for promo banner */
+  @keyframes shimmer {
+    0% {
+      background-position: -250% 0;
+    }
+    100% {
+      background-position: 250% 0;
+    }
   }
 }
 

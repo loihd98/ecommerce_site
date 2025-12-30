@@ -10,14 +10,21 @@ import { TagIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 export default function CategoriesPage() {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState('name');
     const { t } = useI18n();
 
     useEffect(() => {
         setMounted(true);
         fetchCategories();
     }, []);
+
+    useEffect(() => {
+        filterAndSortCategories();
+    }, [categories, searchTerm, sortBy]);
 
     const fetchCategories = async () => {
         try {
@@ -31,6 +38,27 @@ export default function CategoriesPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const filterAndSortCategories = () => {
+        let filtered = [...categories];
+
+        // Filter by search term
+        if (searchTerm) {
+            filtered = filtered.filter(cat =>
+                cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                cat.description?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Sort
+        filtered.sort((a, b) => {
+            if (sortBy === 'name') return a.name.localeCompare(b.name);
+            if (sortBy === 'products') return (b._count?.products || 0) - (a._count?.products || 0);
+            return 0;
+        });
+
+        setFilteredCategories(filtered);
     };
 
     // Show loading during SSR
@@ -60,32 +88,60 @@ export default function CategoriesPage() {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="mb-12">
+                <div className="mb-8">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">{t('categories.title')}</h1>
                     <p className="text-lg text-gray-600 dark:text-gray-400">
                         {t('categories.subtitle')}
                     </p>
                 </div>
 
-                {/* Categories Grid */}
-                {categories.length === 0 ? (
+                {/* Filters */}
+                <div className="mb-6 flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm danh mục..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="name">Sắp xếp: Tên A-Z</option>
+                        <option value="products">Sắp xếp: Số sản phẩm</option>
+                    </select>
+                </div>
+
+                {/* Categories Grid - Smaller Cards */}
+                {filteredCategories.length === 0 ? (
                     <div className="text-center py-12">
                         <TagIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" />
-                        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">{t('categories.noCategories')}</h3>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Categories will appear here once they are added.
-                        </p>
+                        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                            {searchTerm ? 'Không tìm thấy danh mục' : t('categories.noCategories')}
+                        </h3>
+                        {searchTerm && (
+                            <button
+                                onClick={() => setSearchTerm('')}
+                                className="mt-2 text-sm text-blue-600 hover:underline"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        )}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {categories.map((category) => (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        {filteredCategories.map((category) => (
                             <Link
                                 key={category.id}
                                 href={`/products?categoryId=${category.id}`}
-                                className="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                                className="group bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
                             >
-                                {/* Category Image */}
-                                <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+                                {/* Category Image - Smaller */}
+                                <div className="relative h-32 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
                                     {category.image ? (
                                         <Image
                                             src={category.image}
@@ -95,40 +151,36 @@ export default function CategoriesPage() {
                                         />
                                     ) : (
                                         <div className="flex items-center justify-center h-full">
-                                            <TagIcon className="h-20 w-20 text-blue-300" />
+                                            <TagIcon className="h-12 w-12 text-blue-300" />
                                         </div>
                                     )}
                                     {/* Overlay on hover */}
                                     <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                                 </div>
 
-                                {/* Category Info */}
-                                <div className="p-6">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                            {category.name}
-                                        </h3>
-                                        <ArrowRightIcon className="h-5 w-5 text-gray-400 dark:text-gray-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                                    </div>
-
-                                    {category.description && (
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                                            {category.description}
-                                        </p>
-                                    )}
+                                {/* Category Info - Compact */}
+                                <div className="p-3">
+                                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1 line-clamp-1">
+                                        {category.name}
+                                    </h3>
 
                                     {/* Product Count */}
-                                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">
                                         <span className="font-medium text-blue-600 dark:text-blue-400">
                                             {category._count?.products || 0}
                                         </span>
-                                        <span className="ml-1">
-                                            {category._count?.products === 1 ? t('categories.product') : t('categories.products')}
-                                        </span>
+                                        {' '}{category._count?.products === 1 ? t('categories.product') : t('categories.products')}
                                     </div>
                                 </div>
                             </Link>
                         ))}
+                    </div>
+                )}
+
+                {/* Results Count */}
+                {filteredCategories.length > 0 && (
+                    <div className="mt-6 text-center text-sm text-gray-600">
+                        Hiển thị {filteredCategories.length} / {categories.length} danh mục
                     </div>
                 )}
 

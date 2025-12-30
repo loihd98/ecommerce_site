@@ -94,7 +94,20 @@
       "delete": "Xóa",
       "edit": "Sửa",
       "view": "Xem",
-      "close": "Đóng"
+      "close": "Đóng",
+      "back": "Quay lại",
+      "next": "Tiếp theo",
+      "prev": "Trước",
+      "first": "Đầu",
+      "last": "Cuối",
+      "page": "Trang",
+      "of": "của",
+      "results": "kết quả",
+      "showing": "Hiển thị",
+      "to": "đến",
+      "create": "Tạo",
+      "update": "Cập nhật",
+      "submit": "Gửi"
     },
     "nav": {
       "home": "Trang chủ",
@@ -106,13 +119,18 @@
       "login": "Đăng nhập",
       "register": "Đăng ký",
       "logout": "Đăng xuất",
-      "admin": "Quản trị"
+      "admin": "Quản trị",
+      "orders": "Đơn hàng",
+      "profile": "Hồ sơ",
+      "settings": "Cài đặt",
+      "introduction": "Giới thiệu"
     },
     "home": {
       "hero": {
         "title": "Chào mừng đến 🏪 taphoanhadev.com",
         "subtitle": "Tạp hóa trực tuyến thân thiện - Mua sắm dễ dàng, giao hàng nhanh!",
-        "shopNow": "Mua ngay"
+        "shopNow": "Mua ngay",
+        "viewAll": "Xem tất cả"
       },
       "featured": "Sản phẩm nổi bật",
       "newArrivals": "Hàng mới về",
@@ -128,7 +146,33 @@
       "inStock": "Còn hàng",
       "price": "Giá",
       "reviews": "Đánh giá",
-      "rating": "Xếp hạng"
+      "rating": "Xếp hạng",
+      "featured": "Nổi bật",
+      "off": "Giảm",
+      "comparePrice": "Giá gốc",
+      "selectColor": "Chọn màu",
+      "selectSize": "Chọn kích thước",
+      "description": "Mô tả",
+      "adminNote": "Ghi chú quan trọng",
+      "relatedProducts": "Sản phẩm liên quan",
+      "filters": {
+        "category": "Danh mục",
+        "priceRange": "Khoảng giá",
+        "minPrice": "Giá thấp nhất",
+        "maxPrice": "Giá cao nhất",
+        "rating": "Đánh giá",
+        "sortBy": "Sắp xếp theo",
+        "newest": "Mới nhất",
+        "priceLowHigh": "Giá thấp đến cao",
+        "priceHighLow": "Giá cao đến thấp",
+        "nameAZ": "Tên A-Z",
+        "allCategories": "Tất cả danh mục",
+        "allRatings": "Tất cả đánh giá",
+        "fourStarUp": "4★ trở lên",
+        "threeStarUp": "3★ trở lên",
+        "twoStarUp": "2★ trở lên",
+        "oneStarUp": "1★ trở lên"
+      }
     },
     "categories": {
       "title": "Danh mục sản phẩm",
@@ -145,7 +189,8 @@
       "subtotal": "Tạm tính",
       "total": "Tổng cộng",
       "remove": "Xóa",
-      "quantity": "Số lượng"
+      "quantity": "Số lượng",
+      "updateCart": "Cập nhật giỏ hàng"
     },
     "auth": {
       "login": "Đăng nhập",
@@ -156,7 +201,48 @@
       "name": "Họ tên",
       "forgotPassword": "Quên mật khẩu?",
       "dontHaveAccount": "Chưa có tài khoản?",
-      "alreadyHaveAccount": "Đã có tài khoản?"
+      "alreadyHaveAccount": "Đã có tài khoản?",
+      "signIn": "Đăng nhập",
+      "signUp": "Đăng ký",
+      "signOut": "Đăng xuất"
+    },
+    "admin": {
+      "dashboard": "Tổng quan",
+      "products": "Quản lý sản phẩm",
+      "orders": "Quản lý đơn hàng",
+      "users": "Quản lý người dùng",
+      "categories": "Quản lý danh mục",
+      "addProduct": "Thêm sản phẩm",
+      "editProduct": "Sửa sản phẩm",
+      "deleteProduct": "Xóa sản phẩm",
+      "productName": "Tên sản phẩm",
+      "productPrice": "Giá sản phẩm",
+      "stock": "Tồn kho",
+      "active": "Hoạt động",
+      "featured": "Nổi bật",
+      "images": "Hình ảnh",
+      "uploadImage": "Tải lên hình ảnh",
+      "uploading": "Đang tải lên...",
+      "colors": "Màu sắc",
+      "sizes": "Kích thước",
+      "affiliateLink": "Liên kết affiliate",
+      "createSuccess": "Tạo thành công",
+      "updateSuccess": "Cập nhật thành công",
+      "deleteSuccess": "Xóa thành công",
+      "confirmDelete": "Bạn có chắc muốn xóa?",
+      "manageYourStore": "Quản lý cửa hàng của bạn"
+    },
+    "contact": {
+      "title": "Liên hệ",
+      "subtitle": "Chúng tôi sẵn sàng hỗ trợ bạn",
+      "address": "Địa chỉ",
+      "phone": "Điện thoại",
+      "email": "Email",
+      "sendMessage": "Gửi tin nhắn",
+      "yourName": "Tên của bạn",
+      "yourEmail": "Email của bạn",
+      "yourMessage": "Tin nhắn của bạn",
+      "messageSent": "Tin nhắn đã được gửi"
     }
   }
 }

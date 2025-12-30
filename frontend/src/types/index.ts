@@ -41,6 +41,10 @@ export interface Product {
   comparePrice?: number;
   sku?: string;
   images: string[];
+  colors?: string[];
+  sizes?: string[];
+  affiliateLink?: string;
+  adminNote?: string;
   categoryId: string;
   category?: Category;
   stock: number;
@@ -73,6 +77,9 @@ export interface CartItem {
   productId: string;
   product: Product;
   quantity: number;
+  color?: string;
+  size?: string;
+  note?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -104,6 +111,9 @@ export interface OrderItem {
   total: number;
   productName: string;
   productImage?: string;
+  color?: string;
+  size?: string;
+  note?: string;
 }
 
 export interface Address {

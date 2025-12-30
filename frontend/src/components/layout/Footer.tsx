@@ -14,16 +14,10 @@ export default function Footer() {
             <p className="text-sm mb-4">
               Cửa hàng tạp hóa trực tuyến - Mua sắm dễ dàng, giao hàng nhanh chóng!
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-white transition-colors">
-                Facebook
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Twitter
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Instagram
-              </a>
+            <div className="text-sm space-y-2">
+              <p>📍 CT10 - Chung cư Đại Thanh, Kiên Hưng, Hà Đông, Hà Nội</p>
+              <p>📞 <a href="tel:0342429911" className="hover:text-white transition-colors">0342 429 911</a></p>
+              <p className="mt-4 text-xs text-gray-500">dev by Evanloi</p>
             </div>
           </div>
 
@@ -61,11 +55,6 @@ export default function Footer() {
               <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
                   Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="hover:text-white transition-colors">
-                  Shipping Info
                 </Link>
               </li>
               <li>

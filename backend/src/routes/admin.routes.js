@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { body, param } from 'express-validator';
+import { Router } from "express";
+import { body, param } from "express-validator";
 import {
   getDashboardStats,
   createProduct,
@@ -12,9 +12,14 @@ import {
   updateOrderStatus,
   getAllUsers,
   updateUserRole,
-} from '../controllers/admin.controller.js';
-import { authenticate, isAdmin } from '../middleware/auth.middleware.js';
-import { validate } from '../middleware/validation.middleware.js';
+} from "../controllers/admin.controller.js";
+import {
+  getAllComments,
+  toggleApproveComment,
+  adminDeleteComment,
+} from "../controllers/comment.controller.js";
+import { authenticate, isAdmin } from "../middleware/auth.middleware.js";
+import { validate } from "../middleware/validation.middleware.js";
 
 const router = Router();
 
@@ -22,91 +27,110 @@ const router = Router();
 router.use(authenticate, isAdmin);
 
 // Dashboard
-router.get('/dashboard', getDashboardStats);
+router.get("/dashboard", getDashboardStats);
 
 // Products
 router.post(
-  '/products',
+  "/products",
   [
-    body('name').trim().notEmpty().withMessage('Product name is required'),
-    body('price').isFloat({ min: 0 }).withMessage('Valid price required'),
-    body('categoryId').notEmpty().withMessage('Category is required'),
-    body('stock').isInt({ min: 0 }).withMessage('Valid stock required'),
+    body("name").trim().notEmpty().withMessage("Product name is required"),
+    body("price").isFloat({ min: 0 }).withMessage("Valid price required"),
+    body("categoryId").notEmpty().withMessage("Category is required"),
+    body("stock").isInt({ min: 0 }).withMessage("Valid stock required"),
     validate,
   ],
   createProduct
 );
 
 router.put(
-  '/products/:id',
-  [
-    param('id').notEmpty().withMessage('Product ID is required'),
-    validate,
-  ],
+  "/products/:id",
+  [param("id").notEmpty().withMessage("Product ID is required"), validate],
   updateProduct
 );
 
 router.delete(
-  '/products/:id',
-  [
-    param('id').notEmpty().withMessage('Product ID is required'),
-    validate,
-  ],
+  "/products/:id",
+  [param("id").notEmpty().withMessage("Product ID is required"), validate],
   deleteProduct
 );
 
 // Categories
 router.post(
-  '/categories',
+  "/categories",
   [
-    body('name').trim().notEmpty().withMessage('Category name is required'),
+    body("name").trim().notEmpty().withMessage("Category name is required"),
     validate,
   ],
   createCategory
 );
 
 router.put(
-  '/categories/:id',
-  [
-    param('id').notEmpty().withMessage('Category ID is required'),
-    validate,
-  ],
+  "/categories/:id",
+  [param("id").notEmpty().withMessage("Category ID is required"), validate],
   updateCategory
 );
 
 router.delete(
-  '/categories/:id',
-  [
-    param('id').notEmpty().withMessage('Category ID is required'),
-    validate,
-  ],
+  "/categories/:id",
+  [param("id").notEmpty().withMessage("Category ID is required"), validate],
   deleteCategory
 );
 
 // Orders
-router.get('/orders', getAllOrders);
+router.get("/orders", getAllOrders);
 
 router.put(
-  '/orders/:id',
+  "/orders/:id",
   [
-    param('id').notEmpty().withMessage('Order ID is required'),
-    body('status').optional().isIn(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']),
+    param("id").notEmpty().withMessage("Order ID is required"),
+    body("status")
+      .optional()
+      .isIn([
+        "PENDING",
+        "PROCESSING",
+        "SHIPPED",
+        "DELIVERED",
+        "CANCELLED",
+        "REFUNDED",
+      ]),
     validate,
   ],
   updateOrderStatus
 );
 
 // Users
-router.get('/users', getAllUsers);
+router.get("/users", getAllUsers);
 
 router.put(
-  '/users/:id/role',
+  "/users/:id/role",
   [
-    param('id').notEmpty().withMessage('User ID is required'),
-    body('role').isIn(['USER', 'ADMIN']).withMessage('Invalid role'),
+    param("id").notEmpty().withMessage("User ID is required"),
+    body("role").isIn(["USER", "ADMIN"]).withMessage("Invalid role"),
     validate,
   ],
   updateUserRole
+);
+
+// Comments
+router.get("/comments", getAllComments);
+
+router.put(
+  "/comments/:commentId/approve",
+  [
+    param("commentId").notEmpty().withMessage("Comment ID is required"),
+    body("isApproved").isBoolean().withMessage("isApproved must be boolean"),
+    validate,
+  ],
+  toggleApproveComment
+);
+
+router.delete(
+  "/comments/:commentId",
+  [
+    param("commentId").notEmpty().withMessage("Comment ID is required"),
+    validate,
+  ],
+  adminDeleteComment
 );
 
 export default router;

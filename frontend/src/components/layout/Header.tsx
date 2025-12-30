@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useAppSelector } from '@/store/hooks';
+import { useRouter } from 'next/navigation';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { logout } from '@/store/slices/authSlice';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useI18n } from '@/contexts/I18nContext';
 import {
@@ -18,12 +20,29 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function Header() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const { itemCount } = useAppSelector((state) => state.cart);
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    // Clear redux-persist
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('persist:root');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+    }
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
+    // Force reload to clear all state
+    window.location.href = '/';
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -59,9 +78,8 @@ export default function Header() {
       <div className="container-custom">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-2xl">🏪</span>
-            <span>taphoanhadev.com</span>
+          <Link href="/" className="font-bold text-gray-900 dark:text-white flex items-center gap-1 hover:opacity-80 transition-opacity flex-shrink-0">
+            <span className="text-base sm:text-lg md:text-xl">taphoanhadev.com</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -71,9 +89,6 @@ export default function Header() {
             </Link>
             <Link href="/categories" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
               {t('nav.categories')}
-            </Link>
-            <Link href="/shipping" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
-              Shipping
             </Link>
             <Link href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
               Contact
@@ -91,11 +106,11 @@ export default function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="p-1.5 sm:p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
               aria-label="Toggle theme"
             >
               {theme === 'light' ? (
@@ -106,7 +121,7 @@ export default function Header() {
             </button>
 
             {/* Language Switcher */}
-            <div className="relative">
+            <div className="relative hidden sm:block">
               <button
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center space-x-1"
@@ -142,30 +157,30 @@ export default function Header() {
             {/* Search */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="hidden sm:block p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
               aria-label="Search"
             >
-              <MagnifyingGlassIcon className="w-6 h-6" />
+              <MagnifyingGlassIcon className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
             {/* Wishlist */}
             {isAuthenticated && (
               <Link
                 href="/wishlist"
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="hidden sm:block p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 aria-label="Wishlist"
               >
-                <HeartIcon className="w-6 h-6" />
+                <HeartIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </Link>
             )}
 
             {/* Cart */}
             <Link
               href="/cart"
-              className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="relative p-1.5 sm:p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
               aria-label="Cart"
             >
-              <ShoppingBagIcon className="w-6 h-6" />
+              <ShoppingBagIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               {itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-black dark:bg-white text-white dark:text-black text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {itemCount}
@@ -175,23 +190,59 @@ export default function Header() {
 
             {/* User Menu */}
             {isAuthenticated ? (
-              <Link
-                href="/account"
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                aria-label="Account"
-              >
-                <UserIcon className="w-6 h-6" />
-              </Link>
+              <div className="relative hidden sm:block">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  aria-label="Account"
+                >
+                  <UserIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                </button>
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                    <Link
+                      href="/account"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Tài khoản
+                    </Link>
+                    <Link
+                      href="/orders"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Đơn hàng
+                    </Link>
+                    {user?.role === 'ADMIN' && (
+                      <Link
+                        href="/admin"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Quản trị
+                      </Link>
+                    )}
+                    <hr className="my-2 border-gray-200 dark:border-gray-700" />
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <Link href="/login" className="btn-primary text-sm px-4 py-2">
-                Sign In
+              <Link href="/login" className="hidden sm:inline-flex btn-primary text-sm px-4 py-2">
+                Đăng nhập
               </Link>
             )}
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700"
+              className="md:hidden p-1.5 text-gray-700 dark:text-gray-300"
               aria-label="Menu"
             >
               {mobileMenuOpen ? (
@@ -224,28 +275,21 @@ export default function Header() {
                 className="text-gray-700 hover:text-gray-900"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Products
+                Sản phẩm
               </Link>
               <Link
                 href="/categories"
                 className="text-gray-700 hover:text-gray-900"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Categories
-              </Link>
-              <Link
-                href="/shipping"
-                className="text-gray-700 hover:text-gray-900"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Shipping
+                Danh mục
               </Link>
               <Link
                 href="/contact"
                 className="text-gray-700 hover:text-gray-900"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Contact
+                Liên hệ
               </Link>
               {isAuthenticated && (
                 <Link
@@ -253,7 +297,7 @@ export default function Header() {
                   className="text-gray-700 hover:text-gray-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Orders
+                  Đơn hàng
                 </Link>
               )}
               {isAuthenticated && (
@@ -262,7 +306,7 @@ export default function Header() {
                   className="text-gray-700 hover:text-gray-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Wishlist
+                  Yêu thích
                 </Link>
               )}
               {isAuthenticated ? (
@@ -272,15 +316,30 @@ export default function Header() {
                     className="text-gray-700 hover:text-gray-900"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    My Account
+                    Tài khoản
                   </Link>
                   <Link
                     href="/cart"
                     className="text-gray-700 hover:text-gray-900"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Cart ({itemCount})
+                    Giỏ hàng ({itemCount})
                   </Link>
+                  {user?.role === 'ADMIN' && (
+                    <Link
+                      href="/admin"
+                      className="text-emerald-600 hover:text-emerald-700 font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Quản trị
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="text-left text-red-600 hover:text-red-700 font-medium"
+                  >
+                    Đăng xuất
+                  </button>
                 </>
               ) : (
                 <Link
@@ -288,7 +347,7 @@ export default function Header() {
                   className="text-gray-700 hover:text-gray-900"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sign In
+                  Đăng nhập
                 </Link>
               )}
             </nav>

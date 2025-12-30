@@ -15,12 +15,15 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-    const [locale, setLocaleState] = useState<Locale>('en');
+    const [locale, setLocaleState] = useState<Locale>('vi');
 
     useEffect(() => {
         const savedLocale = localStorage.getItem('locale') as Locale;
         if (savedLocale && (savedLocale === 'en' || savedLocale === 'vi')) {
             setLocaleState(savedLocale);
+        } else {
+            // Set Vietnamese as default if no saved locale
+            localStorage.setItem('locale', 'vi');
         }
     }, []);
 

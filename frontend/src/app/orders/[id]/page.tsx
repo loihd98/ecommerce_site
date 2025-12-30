@@ -50,8 +50,8 @@ export default function OrderDetailPage() {
     const colors: Record<string, string> = {
       PENDING: 'bg-yellow-100 text-yellow-800',
       CONFIRMED: 'bg-blue-100 text-blue-800',
-      PROCESSING: 'bg-purple-100 text-purple-800',
-      SHIPPED: 'bg-indigo-100 text-indigo-800',
+      PROCESSING: 'bg-emerald-100 text-emerald-800',
+      SHIPPED: 'bg-teal-100 text-teal-800',
       DELIVERED: 'bg-green-100 text-green-800',
       CANCELLED: 'bg-red-100 text-red-800',
     };
@@ -222,8 +222,8 @@ export default function OrderDetailPage() {
               <p className="font-semibold">{order.paymentMethod}</p>
               <span
                 className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${order.paymentStatus === 'PAID'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-yellow-100 text-yellow-800'
                   }`}
               >
                 {order.paymentStatus}
