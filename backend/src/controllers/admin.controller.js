@@ -62,6 +62,8 @@ export const createProduct = asyncHandler(async (req, res) => {
     metaDescription,
     metaKeywords,
     images,
+    affiliateLinkId,
+    customAffiliateUrl,
   } = req.body;
 
   const slug = generateSlug(name);
@@ -86,9 +88,12 @@ export const createProduct = asyncHandler(async (req, res) => {
       metaDescription,
       metaKeywords,
       images: images || [],
+      affiliateLinkId: affiliateLinkId || null,
+      customAffiliateUrl: customAffiliateUrl || null,
     },
     include: {
       category: true,
+      affiliateLink: true,
     },
   });
 
@@ -151,7 +156,9 @@ export const createCategory = asyncHandler(async (req, res) => {
 
   // Validate parentId: convert empty string to null, validate if provided
   let validParentId = null;
-  if (parentId && parentId !== "" && parentId !== "null") {
+  
+  // Handle empty string, null, undefined, "null" string
+  if (parentId !== undefined && parentId !== null && parentId !== "" && parentId !== "null") {
     // Check if parent category exists
     const parentCategory = await prisma.category.findUnique({
       where: { id: parentId },

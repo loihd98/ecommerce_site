@@ -23,6 +23,7 @@ import commentRoutes from "./routes/comment.routes.js";
 import wishlistRoutes from "./routes/wishlist.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import mediaRoutes from "./routes/media.routes.js";
+import affiliateLinkRoutes from "./routes/affiliateLink.routes.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -90,6 +91,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/media", mediaRoutes);
+app.use("/api/affiliate-links", affiliateLinkRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

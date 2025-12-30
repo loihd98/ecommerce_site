@@ -79,6 +79,22 @@ model Category {
   @@map("categories")
 }
 
+model AffiliateLink {
+  id          String   @id @default(cuid())
+  name        String   // "Amazon", "Shopee", "Lazada"
+  url         String   // The affiliate link template or base URL
+  description String?
+  icon        String?  // Icon/logo URL
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  products    Product[]
+  
+  @@map("affiliate_links")
+}
+
 model Product {
   id          String   @id @default(cuid())
   name        String
@@ -100,7 +116,9 @@ model Product {
   sizes       String[] // Available sizes
   
   // Affiliate
-  affiliateLink String? // Affiliate/external link
+  affiliateLinkId String?
+  affiliateLink   AffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
+  customAffiliateUrl String? // Custom affiliate URL for this product
   
   // Admin Note
   adminNote String? // Admin's note/description for customers
