@@ -28,7 +28,7 @@ const app = express();
 const server = http.createServer(app);
 
 // Trust proxy - required when behind Nginx
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Security middleware
 app.use(
