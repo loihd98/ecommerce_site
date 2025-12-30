@@ -60,73 +60,12 @@ apt update && apt upgrade -y
 apt install -y curl wget git vim nano htop net-tools
 ```
 
-### Step 3: Create Deployment User
+### Step 3: Configure Firewall
 
-```bash
-# Create new user 'deploy' (if not exists)
-adduser deploy
-# If user already exists, set password:
-passwd deploy
-# Enter strong password twice
+> ⚠️ **Security Note**: This guide uses root user for simplicity. For production environments, consider creating a dedicated user with sudo privileges and proper SSH key authentication after initial setup.
 
-# Add deploy to sudo group
-usermod -aG sudo deploy
-
-# Fix SSH configuration for password authentication
-cat > /tmp/ssh_fix.sh << 'EOF'
-#!/bin/bash
-# Backup SSH config
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
-
-# Enable password authentication
-sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sed -i 's/^#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-
-# Enable PAM (required for password auth)
-sed -i 's/^UsePAM.*/UsePAM yes/' /etc/ssh/sshd_config
-sed -i 's/^#UsePAM.*/UsePAM yes/' /etc/ssh/sshd_config
-
-# If lines don't exist, add them
-grep -q "^PasswordAuthentication" /etc/ssh/sshd_config || echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
-grep -q "^UsePAM" /etc/ssh/sshd_config || echo "UsePAM yes" >> /etc/ssh/sshd_config
-
-# Restart SSH
-systemctl restart sshd
-echo "SSH configuration updated!"
-EOF
-
-# Run the fix script
-bash /tmp/ssh_fix.sh
-
-# Verify configuration
-echo "=== Current SSH Config ==="
-grep -E "^PasswordAuthentication|^UsePAM" /etc/ssh/sshd_config
-
-# Exit root session
-exit
-```
-
-**Now SSH as deploy user:**
-
-```bash
-ssh deploy@103.199.17.168
-# Enter the password you set
-```
-
-### Step 4: Configure SSH Key (Optional but Recommended)
-
-```bash
-# On your local machine, generate SSH key if you don't have one
-ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-
-# Copy public key to VPS (from your local machine)
-ssh-copy-id deploy@103.199.17.168
-
-# Test SSH key login
-ssh deploy@103.199.17.168
-```
-
-### Step 5: Configure Firewall
+````bash
+# Continue as root user
 
 ```bash
 # Allow SSH (important - do this first!)
@@ -141,7 +80,7 @@ sudo ufw enable
 
 # Check status
 sudo ufw status
-```
+````
 
 ---
 
@@ -151,32 +90,29 @@ sudo ufw status
 
 ```bash
 # Update package list
-sudo apt update
+apt update
 
 # Install prerequisites
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+apt install -y apt-transport-https ca-certificates curl software-properties-common
 
 # Add Docker GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
 # Add Docker repository
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Update package list again
-sudo apt update
+apt update
 
 # Install Docker (without docker-model-plugin which is not available on Ubuntu 20.04)
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Add current user to docker group
-sudo usermod -aG docker deploy
+apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Start Docker service
-sudo systemctl enable docker
-sudo systemctl start docker
+systemctl enable docker
+systemctl start docker
 
 # Check Docker status
-sudo systemctl status docker
+systemctl status docker
 
 # Verify installation
 docker --version
@@ -188,10 +124,10 @@ docker --version
 
 ```bash
 # Download Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
 # Make it executable
-sudo chmod +x /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
 # Verify installation
 docker-compose --version
@@ -201,37 +137,24 @@ docker-compose --version
 
 ```bash
 # Install Nginx
-sudo apt install nginx -y
+apt install nginx -y
 
 # Start and enable Nginx
-sudo systemctl enable nginx
-sudo systemctl start nginx
+systemctl enable nginx
+systemctl start nginx
 
 # Check status
-sudo systemctl status nginx
+systemctl status nginx
 ```
 
 ### Step 4: Install Certbot for SSL
 
 ```bash
 # Install Certbot and Nginx plugin
-sudo apt install certbot python3-certbot-nginx -y
+apt install certbot python3-certbot-nginx -y
 
 # Verify installation
 certbot --version
-```
-
-### Step 5: Logout and Login
-
-```bash
-# Logout to apply docker group changes
-exit
-
-# Login again as deploy user
-ssh deploy@103.199.17.168
-
-# Verify docker works without sudo
-docker ps
 ```
 
 ---
@@ -242,10 +165,7 @@ docker ps
 
 ```bash
 # Create directory
-sudo mkdir -p /var/www/taphoanhadev
-
-# Set ownership to deploy user
-sudo chown -R deploy:deploy /var/www/taphoanhadev
+mkdir -p /var/www/taphoanhadev
 
 # Navigate to directory
 cd /var/www/taphoanhadev
@@ -326,6 +246,8 @@ mkdir -p uploads/videos
 
 # Set proper permissions
 chmod -R 755 uploads/
+
+# Note: Files will be owned by root. For production, consider creating a dedicated application user.
 ```
 
 ---
@@ -354,13 +276,13 @@ ping taphoanhadev.com -c 4
 ### Step 2: Stop Nginx Temporarily
 
 ```bash
-sudo systemctl stop nginx
+systemctl stop nginx
 ```
 
 ### Step 3: Obtain SSL Certificate
 
 ```bash
-sudo certbot certonly --standalone \
+certbot certonly --standalone \
   -d taphoanhadev.com \
   -d www.taphoanhadev.com \
   --email hideonstorms@gmail.com \
@@ -379,7 +301,7 @@ Key is saved at: /etc/letsencrypt/live/taphoanhadev.com/privkey.pem
 ### Step 4: Verify Certificate Files
 
 ```bash
-sudo ls -la /etc/letsencrypt/live/taphoanhadev.com/
+ls -la /etc/letsencrypt/live/taphoanhadev.com/
 
 # Should see:
 # fullchain.pem - Full certificate chain
@@ -392,14 +314,14 @@ sudo ls -la /etc/letsencrypt/live/taphoanhadev.com/
 
 ```bash
 # Enable certbot renewal timer
-sudo systemctl enable certbot.timer
-sudo systemctl start certbot.timer
+systemctl enable certbot.timer
+systemctl start certbot.timer
 
 # Check timer status
-sudo systemctl status certbot.timer
+systemctl status certbot.timer
 
 # Test renewal (dry run)
-sudo certbot renew --dry-run
+certbot renew --dry-run
 ```
 
 ---
@@ -409,7 +331,7 @@ sudo certbot renew --dry-run
 ### Step 1: Create Nginx Configuration
 
 ```bash
-sudo nano /etc/nginx/sites-available/taphoanhadev.com
+nano /etc/nginx/sites-available/taphoanhadev.com
 ```
 
 ### Step 2: Add Configuration
@@ -503,19 +425,19 @@ Save with `Ctrl+X`, `Y`, `Enter`.
 
 ```bash
 # Create symbolic link
-sudo ln -s /etc/nginx/sites-available/taphoanhadev.com /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/taphoanhadev.com /etc/nginx/sites-enabled/
 ```
 
 ### Step 4: Remove Default Site
 
 ```bash
-sudo rm /etc/nginx/sites-enabled/default
+rm /etc/nginx/sites-enabled/default
 ```
 
 ### Step 5: Test Configuration
 
 ```bash
-sudo nginx -t
+nginx -t
 
 # Expected output:
 # nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
@@ -525,8 +447,8 @@ sudo nginx -t
 ### Step 6: Start Nginx
 
 ```bash
-sudo systemctl start nginx
-sudo systemctl status nginx
+systemctl start nginx
+systemctl status nginx
 ```
 
 ---
@@ -963,15 +885,15 @@ docker-compose -f docker-compose.dev.yml exec frontend sh
 docker ps -a
 
 # Nginx status
-sudo systemctl status nginx
+systemctl status nginx
 
 # View logs
 docker-compose logs -f backend
 docker-compose logs -f frontend
 
 # Nginx logs
-sudo tail -f /var/log/nginx/error.log
-sudo tail -f /var/log/nginx/access.log
+tail -f /var/log/nginx/error.log
+tail -f /var/log/nginx/access.log
 ```
 
 ### System Monitoring
@@ -988,7 +910,7 @@ du -sh /var/www/taphoanhadev/*
 htop
 
 # Check open ports
-sudo netstat -tulpn
+netstat -tulpn
 ```
 
 ### Maintenance Mode
@@ -1047,13 +969,13 @@ location @maintenance {
 
 ```bash
 # Find process
-sudo lsof -i :80
-sudo lsof -i :443
-sudo lsof -i :3000
-sudo lsof -i :5000
+lsof -i :80
+lsof -i :443
+lsof -i :3000
+lsof -i :5000
 
 # Kill process
-sudo kill -9 <PID>
+kill -9 <PID>
 ```
 
 ### Database Connection Failed
@@ -1078,9 +1000,8 @@ docker-compose exec postgres psql -U postgres -d ecommerce_db
 # Check uploads directory
 ls -la uploads/
 
-# Fix permissions
-sudo chown -R deploy:deploy uploads/
-sudo chmod -R 755 uploads/
+# Fix permissions (files owned by root)
+chmod -R 755 uploads/
 
 # Verify nginx is serving static files
 curl https://taphoanhadev.com/uploads/images/test.jpg
@@ -1090,16 +1011,16 @@ curl https://taphoanhadev.com/uploads/images/test.jpg
 
 ```bash
 # Check certificate expiry
-sudo certbot certificates
+certbot certificates
 
 # Renew certificate manually
-sudo certbot renew
+certbot renew
 
 # Force renewal
-sudo certbot renew --force-renewal
+certbot renew --force-renewal
 
 # Restart nginx
-sudo systemctl restart nginx
+systemctl restart nginx
 ```
 
 ### Frontend Build Issues
@@ -1232,9 +1153,9 @@ web_ban_hang/
 
 ```bash
 # Enable fail2ban for SSH
-sudo apt install fail2ban -y
-sudo systemctl enable fail2ban
-sudo systemctl start fail2ban
+apt install fail2ban -y
+systemctl enable fail2ban
+systemctl start fail2ban
 
 # Generate strong JWT secrets
 openssl rand -base64 32
@@ -1242,12 +1163,16 @@ openssl rand -base64 32
 # Set up automated backups
 crontab -e
 # Add: 0 2 * * * /var/www/taphoanhadev/backup.sh
-
-# Disable root SSH login (after setting up deploy user with SSH key)
-sudo nano /etc/ssh/sshd_config
-# Set: PermitRootLogin no
-sudo systemctl restart sshd
 ```
+
+**⚠️ Root User Security:**
+
+This setup uses root user for simplicity. For production:
+
+1. Create a dedicated application user with limited privileges
+2. Set up SSH key authentication
+3. Disable root SSH login after setting up the dedicated user
+4. Use that user for all application operations
 
 ---
 
