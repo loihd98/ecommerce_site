@@ -63,19 +63,54 @@ apt install -y curl wget git vim nano htop net-tools
 ### Step 3: Create Deployment User
 
 ```bash
-# Create new user 'deploy'
+# Create new user 'deploy' (if not exists)
 adduser deploy
-# Enter password when prompted (use a strong password)
+# If user already exists, set password:
+passwd deploy
+# Enter strong password twice
 
 # Add deploy to sudo group
 usermod -aG sudo deploy
 
+# Fix SSH configuration for password authentication
+cat > /tmp/ssh_fix.sh << 'EOF'
+#!/bin/bash
+# Backup SSH config
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+
+# Enable password authentication
+sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sed -i 's/^#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# Enable PAM (required for password auth)
+sed -i 's/^UsePAM.*/UsePAM yes/' /etc/ssh/sshd_config
+sed -i 's/^#UsePAM.*/UsePAM yes/' /etc/ssh/sshd_config
+
+# If lines don't exist, add them
+grep -q "^PasswordAuthentication" /etc/ssh/sshd_config || echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+grep -q "^UsePAM" /etc/ssh/sshd_config || echo "UsePAM yes" >> /etc/ssh/sshd_config
+
+# Restart SSH
+systemctl restart sshd
+echo "SSH configuration updated!"
+EOF
+
+# Run the fix script
+bash /tmp/ssh_fix.sh
+
+# Verify configuration
+echo "=== Current SSH Config ==="
+grep -E "^PasswordAuthentication|^UsePAM" /etc/ssh/sshd_config
+
 # Exit root session
 exit
+```
 
-# Now SSH as deploy user
+**Now SSH as deploy user:**
+
+```bash
 ssh deploy@103.199.17.168
-# Enter the password you set for deploy user
+# Enter the password you set
 ```
 
 ### Step 4: Configure SSH Key (Optional but Recommended)
