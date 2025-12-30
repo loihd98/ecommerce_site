@@ -156,9 +156,14 @@ export const createCategory = asyncHandler(async (req, res) => {
 
   // Validate parentId: convert empty string to null, validate if provided
   let validParentId = null;
-  
+
   // Handle empty string, null, undefined, "null" string
-  if (parentId !== undefined && parentId !== null && parentId !== "" && parentId !== "null") {
+  if (
+    parentId !== undefined &&
+    parentId !== null &&
+    parentId !== "" &&
+    parentId !== "null"
+  ) {
     // Check if parent category exists
     const parentCategory = await prisma.category.findUnique({
       where: { id: parentId },

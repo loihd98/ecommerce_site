@@ -9,7 +9,7 @@ export const getAffiliateLinks = asyncHandler(async (req, res) => {
 
   const where = {};
   if (active !== undefined) {
-    where.isActive = active === 'true';
+    where.isActive = active === "true";
   }
 
   const totalCount = await prisma.affiliateLink.count({ where });
@@ -17,7 +17,7 @@ export const getAffiliateLinks = asyncHandler(async (req, res) => {
 
   const affiliateLinks = await prisma.affiliateLink.findMany({
     where,
-    orderBy: { name: 'asc' },
+    orderBy: { name: "asc" },
     skip: pagination.skip,
     take: pagination.pageSize,
   });
@@ -66,7 +66,9 @@ export const createAffiliateLink = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json(ApiResponse.created(affiliateLink, "Affiliate link created successfully"));
+    .json(
+      ApiResponse.created(affiliateLink, "Affiliate link created successfully")
+    );
 });
 
 // Admin: Update affiliate link
@@ -94,7 +96,10 @@ export const updateAffiliateLink = asyncHandler(async (req, res) => {
   });
 
   res.json(
-    ApiResponse.success(updatedAffiliateLink, "Affiliate link updated successfully")
+    ApiResponse.success(
+      updatedAffiliateLink,
+      "Affiliate link updated successfully"
+    )
   );
 });
 

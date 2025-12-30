@@ -1,121 +1,112 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function seedCategories() {
-  console.log('🌱 Seeding categories...');
+  console.log("🌱 Seeding categories...");
 
   // Create parent categories
   const electronics = await prisma.category.upsert({
-    where: { slug: 'electronics' },
+    where: { slug: "electronics" },
     update: {},
     create: {
-      name: 'Electronics',
-      slug: 'electronics',
-      description: 'Electronic devices and gadgets',
-      isActive: true,
+      name: "Electronics",
+      slug: "electronics",
+      description: "Electronic devices and gadgets",
     },
   });
 
   const fashion = await prisma.category.upsert({
-    where: { slug: 'fashion' },
+    where: { slug: "fashion" },
     update: {},
     create: {
-      name: 'Fashion',
-      slug: 'fashion',
-      description: 'Clothing and accessories',
-      isActive: true,
+      name: "Fashion",
+      slug: "fashion",
+      description: "Clothing and accessories",
     },
   });
 
   const home = await prisma.category.upsert({
-    where: { slug: 'home-living' },
+    where: { slug: "home-living" },
     update: {},
     create: {
-      name: 'Home & Living',
-      slug: 'home-living',
-      description: 'Home decor and furniture',
-      isActive: true,
+      name: "Home & Living",
+      slug: "home-living",
+      description: "Home decor and furniture",
     },
   });
 
   const beauty = await prisma.category.upsert({
-    where: { slug: 'beauty' },
+    where: { slug: "beauty" },
     update: {},
     create: {
-      name: 'Beauty',
-      slug: 'beauty',
-      description: 'Beauty and personal care products',
-      isActive: true,
+      name: "Beauty",
+      slug: "beauty",
+      description: "Beauty and personal care products",
     },
   });
 
   const sports = await prisma.category.upsert({
-    where: { slug: 'sports' },
+    where: { slug: "sports" },
     update: {},
     create: {
-      name: 'Sports & Outdoors',
-      slug: 'sports',
-      description: 'Sports equipment and outdoor gear',
-      isActive: true,
+      name: "Sports & Outdoors",
+      slug: "sports",
+      description: "Sports equipment and outdoor gear",
     },
   });
 
   // Create subcategories
   await prisma.category.upsert({
-    where: { slug: 'smartphones' },
+    where: { slug: "smartphones" },
     update: {},
     create: {
-      name: 'Smartphones',
-      slug: 'smartphones',
-      description: 'Mobile phones and accessories',
+      name: "Smartphones",
+      slug: "smartphones",
+      description: "Mobile phones and accessories",
       parentId: electronics.id,
-      isActive: true,
     },
   });
 
   await prisma.category.upsert({
-    where: { slug: 'laptops' },
+    where: { slug: "laptops" },
     update: {},
     create: {
-      name: 'Laptops',
-      slug: 'laptops',
-      description: 'Laptops and notebooks',
+      name: "Laptops",
+      slug: "laptops",
+      description: "Laptops and notebooks",
       parentId: electronics.id,
-      isActive: true,
     },
   });
 
   await prisma.category.upsert({
-    where: { slug: 'mens-fashion' },
+    where: { slug: "mens-fashion" },
     update: {},
     create: {
       name: "Men's Fashion",
-      slug: 'mens-fashion',
+      slug: "mens-fashion",
       description: "Men's clothing and accessories",
       parentId: fashion.id,
-      isActive: true,
     },
   });
 
   await prisma.category.upsert({
-    where: { slug: 'womens-fashion' },
+    where: { slug: "womens-fashion" },
     update: {},
     create: {
       name: "Women's Fashion",
-      slug: 'womens-fashion',
+      slug: "womens-fashion",
       description: "Women's clothing and accessories",
       parentId: fashion.id,
-      isActive: true,
     },
   });
 
-  console.log('✅ Categories seeded successfully!');
+  console.log("✅ Categories seeded successfully!");
 }
 
 seedCategories()
   .catch((e) => {
-    console.error('❌ Error seeding categories:', e);
+    console.error("❌ Error seeding categories:", e);
     process.exit(1);
   })
   .finally(async () => {
