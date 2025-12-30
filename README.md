@@ -366,7 +366,7 @@ server {
     # SSL Configuration
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
-    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 10m;
 
@@ -568,10 +568,11 @@ curl -I https://taphoanhadev.com
 ### Step 4: Test Backend API
 
 ```bash
-curl https://taphoanhadev.com/api/health
-
-# Or check products endpoint
+# Test products endpoint
 curl https://taphoanhadev.com/api/products
+
+# Test categories endpoint
+curl https://taphoanhadev.com/api/categories
 ```
 
 ### Step 5: Access Website

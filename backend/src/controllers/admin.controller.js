@@ -149,13 +149,26 @@ export const createCategory = asyncHandler(async (req, res) => {
 
   const slug = generateSlug(name);
 
+  // Validate parentId: convert empty string to null, validate if provided
+  let validParentId = null;
+  if (parentId && parentId !== '' && parentId !== 'null') {
+    // Check if parent category exists
+    const parentCategory = await prisma.category.findUnique({
+      where: { id: parentId },
+    });
+    if (!parentCategory) {
+      throw new NotFoundError("Parent category not found");
+    }
+    validParentId = parentId;
+  }
+
   const category = await prisma.category.create({
     data: {
       name,
       slug,
       description,
       image,
-      parentId,
+      parentId: validParentId,
     },
   });
 
@@ -176,11 +189,31 @@ export const updateCategory = asyncHandler(async (req, res) => {
     throw new NotFoundError("Category not found");
   }
 
+  // Validate parentId: convert empty string to null, validate if provided
+  let validParentId = undefined;
+  if (parentId !== undefined) {
+    if (parentId === '' || parentId === 'null' || parentId === null) {
+      validParentId = null;
+    } else {
+      // Check if parent category exists and prevent circular reference
+      if (parentId === id) {
+        throw new Error("Category cannot be its own parent");
+      }
+      const parentCategory = await prisma.category.findUnique({
+        where: { id: parentId },
+      });
+      if (!parentCategory) {
+        throw new NotFoundError("Parent category not found");
+      }
+      validParentId = parentId;
+    }
+  }
+
   const data = {
     ...(name && { name, slug: generateSlug(name) }),
     ...(description !== undefined && { description }),
     ...(image !== undefined && { image }),
-    ...(parentId !== undefined && { parentId }),
+    ...(validParentId !== undefined && { parentId: validParentId }),
   };
 
   const updatedCategory = await prisma.category.update({
