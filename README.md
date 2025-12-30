@@ -70,8 +70,12 @@ adduser deploy
 # Add deploy to sudo group
 usermod -aG sudo deploy
 
-# Switch to deploy user
-su - deploy
+# Exit root session
+exit
+
+# Now SSH as deploy user
+ssh deploy@103.199.17.168
+# Enter the password you set for deploy user
 ```
 
 ### Step 4: Configure SSH Key (Optional but Recommended)
@@ -111,9 +115,23 @@ sudo ufw status
 ### Step 1: Install Docker
 
 ```bash
-# Download and install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
+# Update package list
+sudo apt update
+
+# Install prerequisites
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+
+# Add Docker GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# Add Docker repository
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update package list again
+sudo apt update
+
+# Install Docker (without docker-model-plugin which may not be available)
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Add current user to docker group
 sudo usermod -aG docker $USER
