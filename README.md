@@ -130,19 +130,24 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] 
 # Update package list again
 sudo apt update
 
-# Install Docker (without docker-model-plugin which may not be available)
+# Install Docker (without docker-model-plugin which is not available on Ubuntu 20.04)
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Add current user to docker group
-sudo usermod -aG docker $USER
+sudo usermod -aG docker deploy
 
 # Start Docker service
 sudo systemctl enable docker
 sudo systemctl start docker
 
+# Check Docker status
+sudo systemctl status docker
+
 # Verify installation
 docker --version
 ```
+
+**Note:** Ubuntu 20.04 (Focal) has reached end-of-life. The `docker-model-plugin` package is not available and can be safely skipped. Docker will work perfectly without it.
 
 ### Step 2: Install Docker Compose
 
