@@ -1,10 +1,24 @@
 import rateLimit from "express-rate-limit";
 import { config } from "../config/config.js";
 
-// General rate limiter
+// Whitelisted IPs (admin/development IPs that bypass rate limiting)
+const WHITELISTED_IPS = [
+  "127.0.0.1",
+  "::1",
+  "::ffff:127.0.0.1",
+  // Add your IP here if needed
+];
+
+// Skip function for whitelisted IPs
+const skipWhitelistedIPs = (req) => {
+  const clientIP = req.ip || req.connection.remoteAddress;
+  return WHITELISTED_IPS.includes(clientIP);
+};
+
+// General rate limiter - TEMPORARILY DISABLED
 export const rateLimiter = rateLimit({
   windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.max,
+  max: 999999, // Temporarily disabled
   message: {
     success: false,
     message: "Too many requests, please try again later",
@@ -12,12 +26,13 @@ export const rateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => true, // Skip all requests temporarily
 });
 
-// Auth rate limiter (stricter)
+// Auth rate limiter (stricter) - TEMPORARILY DISABLED
 export const authRateLimiter = rateLimit({
   windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.authMax,
+  max: 999999, // Temporarily disabled
   message: {
     success: false,
     message: "Too many authentication attempts, please try again later",
@@ -26,12 +41,13 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true,
+  skip: () => true, // Skip all requests temporarily
 });
 
 // Payment rate limiter
 export const paymentRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: config.nodeEnv === "production" ? 3 : 100, // 100 for dev, 3 for production
+  max: config.nodeEnv === "production" ? 10 : 100, // Increased from 3 to 10 for production
   message: {
     success: false,
     message: "Too many payment attempts, please try again later",
@@ -39,4 +55,5 @@ export const paymentRateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipWhitelistedIPs,
 });
